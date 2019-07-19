@@ -1,0 +1,75 @@
+{
+    "name": "Columba I",
+    "ra": [
+        {
+            "value": 82.86,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 28.03,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.999,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 21.3,
+            "error_upper": 0.22,
+            "error_lower": 0.22,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 16.8,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 99.9,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 1.9,
+            "error_upper": 0.5,
+            "error_lower": 0.4,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 99.9,
+            "error_upper": 99.9,
+            "error_lower": 99.9,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

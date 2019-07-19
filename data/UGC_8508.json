@@ -1,0 +1,103 @@
+{
+    "name": "UGC 8508",
+    "ra": [
+        {
+            "value": 202.685,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 54.91,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.015,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 27.06,
+            "error_upper": 0.03,
+            "error_lower": 0.03,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": 56.0,
+            "error_upper": 5.0,
+            "error_lower": 5.0,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 13.7,
+            "error_upper": 0.1,
+            "error_lower": 0.1,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 120.0,
+            "error_upper": 2.0,
+            "error_lower": 2.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.45,
+            "error_upper": 0.05,
+            "error_lower": 0.05,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 21.5,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 0.42,
+            "error_upper": 0.04,
+            "error_lower": 0.04,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 99.9,
+            "error_upper": 99.9,
+            "error_lower": 99.9,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

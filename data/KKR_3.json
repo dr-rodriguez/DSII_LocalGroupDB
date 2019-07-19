@@ -1,0 +1,103 @@
+{
+    "name": "KKR 3",
+    "ra": [
+        {
+            "value": 211.79375,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 35.06028,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.014,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 26.7,
+            "error_upper": 0.12,
+            "error_lower": 0.12,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": 63.3,
+            "error_upper": 1.8,
+            "error_lower": 1.8,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 17.2,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 0.0,
+            "error_upper": 1.0,
+            "error_lower": 1.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.05,
+            "error_upper": 0.01,
+            "error_lower": 0.01,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 23.8,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 0.36,
+            "error_upper": 0.04,
+            "error_lower": 0.04,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 99.9,
+            "error_upper": 99.9,
+            "error_lower": 99.9,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

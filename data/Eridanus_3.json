@@ -1,0 +1,94 @@
+{
+    "name": "Eridanus 3",
+    "ra": [
+        {
+            "value": 35.68958,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 52.28361,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.999,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 19.7,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 17.7,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 83.0,
+            "error_upper": 36.0,
+            "error_lower": 36.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.27,
+            "error_upper": 0.3,
+            "error_lower": 0.16,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 99.9,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 0.54,
+            "error_upper": 0.5,
+            "error_lower": 0.1,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 99.9,
+            "error_upper": 99.9,
+            "error_lower": 99.9,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

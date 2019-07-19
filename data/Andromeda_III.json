@@ -1,0 +1,103 @@
+{
+    "name": "Andromeda III",
+    "ra": [
+        {
+            "value": 8.89083,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 36.49778,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.056,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 24.37,
+            "error_upper": 0.07,
+            "error_lower": 0.07,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -344.3,
+            "error_upper": 1.7,
+            "error_lower": 1.7,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 14.2,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 136.0,
+            "error_upper": 3.0,
+            "error_lower": 3.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.52,
+            "error_upper": 0.02,
+            "error_lower": 0.02,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 24.8,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 2.2,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 9.3,
+            "error_upper": 1.4,
+            "error_lower": 1.4,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

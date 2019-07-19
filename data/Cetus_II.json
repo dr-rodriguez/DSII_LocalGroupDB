@@ -1,0 +1,75 @@
+{
+    "name": "Cetus II",
+    "ra": [
+        {
+            "value": 19.47,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 17.42,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.999,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 17.38,
+            "error_upper": 0.19,
+            "error_lower": 0.19,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 17.4,
+            "error_upper": 0.7,
+            "error_lower": 0.7,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 99.9,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 1.9,
+            "error_upper": 1.0,
+            "error_lower": 0.5,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 99.9,
+            "error_upper": 99.9,
+            "error_lower": 99.9,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

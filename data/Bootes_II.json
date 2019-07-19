@@ -1,0 +1,103 @@
+{
+    "name": "Bootes II",
+    "ra": [
+        {
+            "value": 209.5,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 12.85,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.031,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 18.1,
+            "error_upper": 0.06,
+            "error_lower": 0.06,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -117.0,
+            "error_upper": 5.2,
+            "error_lower": 5.2,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 15.4,
+            "error_upper": 0.9,
+            "error_lower": 0.9,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 145.0,
+            "error_upper": 55.0,
+            "error_lower": 55.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.21,
+            "error_upper": 0.21,
+            "error_lower": 0.21,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 28.1,
+            "error_upper": 1.6,
+            "error_lower": 1.6,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 4.2,
+            "error_upper": 1.4,
+            "error_lower": 1.4,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 10.5,
+            "error_upper": 7.4,
+            "error_lower": 7.4,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

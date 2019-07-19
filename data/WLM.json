@@ -1,0 +1,103 @@
+{
+    "name": "WLM",
+    "ra": [
+        {
+            "value": 0.4925,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 15.46083,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.038,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 24.85,
+            "error_upper": 0.08,
+            "error_lower": 0.08,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -130.0,
+            "error_upper": 1.0,
+            "error_lower": 1.0,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 10.6,
+            "error_upper": 0.1,
+            "error_lower": 0.1,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 179.0,
+            "error_upper": 2.0,
+            "error_lower": 2.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.55,
+            "error_upper": 0.05,
+            "error_lower": 0.1,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 23.7,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 8.62,
+            "error_upper": 0.26,
+            "error_lower": 0.26,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 17.5,
+            "error_upper": 2.0,
+            "error_lower": 2.0,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

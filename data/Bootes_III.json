@@ -1,0 +1,93 @@
+{
+    "name": "Bootes III",
+    "ra": [
+        {
+            "value": 209.3,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 26.8,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.021,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 18.35,
+            "error_upper": 0.1,
+            "error_lower": 0.1,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": 197.5,
+            "error_upper": 3.8,
+            "error_lower": 3.8,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 12.6,
+            "error_upper": 0.5,
+            "error_lower": 0.5,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 90.0,
+            "error_upper": 99.9,
+            "error_lower": 99.9,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.5,
+            "error_upper": 9.99,
+            "error_lower": 9.99,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 31.3,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 14.0,
+            "error_upper": 3.2,
+            "error_lower": 3.2,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

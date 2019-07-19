@@ -1,0 +1,103 @@
+{
+    "name": "Leo A",
+    "ra": [
+        {
+            "value": 149.86042,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 30.74639,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.021,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 24.51,
+            "error_upper": 0.12,
+            "error_lower": 0.12,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": 24.0,
+            "error_upper": 1.5,
+            "error_lower": 1.5,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 12.4,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 114.0,
+            "error_upper": 5.0,
+            "error_lower": 5.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.4,
+            "error_upper": 0.03,
+            "error_lower": 0.03,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 22.8,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 2.15,
+            "error_upper": 9.99,
+            "error_lower": 9.99,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 6.7,
+            "error_upper": 1.4,
+            "error_lower": 1.2,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

@@ -1,0 +1,103 @@
+{
+    "name": "NGC 6822",
+    "ra": [
+        {
+            "value": 296.23583,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 14.78917,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.231,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 23.31,
+            "error_upper": 0.08,
+            "error_lower": 0.08,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -54.5,
+            "error_upper": 1.7,
+            "error_lower": 1.7,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 8.1,
+            "error_upper": 0.2,
+            "error_lower": 0.2,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 330.0,
+            "error_upper": 10.0,
+            "error_lower": 10.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.24,
+            "error_upper": 0.05,
+            "error_lower": 0.05,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 19.7,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 2.65,
+            "error_upper": 9.99,
+            "error_lower": 9.99,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 23.2,
+            "error_upper": 1.2,
+            "error_lower": 1.2,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

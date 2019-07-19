@@ -1,0 +1,103 @@
+{
+    "name": "Andromeda XXI",
+    "ra": [
+        {
+            "value": 358.69875,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 42.47083,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.093,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 24.59,
+            "error_upper": 0.06,
+            "error_lower": 0.07,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -362.5,
+            "error_upper": 0.9,
+            "error_lower": 0.9,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 14.8,
+            "error_upper": 0.6,
+            "error_lower": 0.6,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "position_angle": [
+        {
+            "value": 110.0,
+            "error_upper": 15.0,
+            "error_lower": 15.0,
+            "best": 1,
+            "unit": "deg",
+            "reference": ""
+        }
+    ],
+    "ellipticity": [
+        {
+            "value": 0.2,
+            "error_upper": 0.07,
+            "error_lower": 0.07,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 27.0,
+            "error_upper": 0.4,
+            "error_lower": 0.4,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 3.5,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 4.5,
+            "error_upper": 1.2,
+            "error_lower": 1.0,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

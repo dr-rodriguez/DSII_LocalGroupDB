@@ -1,0 +1,84 @@
+{
+    "name": "Andromeda XVIII",
+    "ra": [
+        {
+            "value": 0.56042,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 45.08889,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.106,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 25.42,
+            "error_upper": 0.07,
+            "error_lower": 0.08,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -332.1,
+            "error_upper": 2.7,
+            "error_lower": 2.7,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 16.0,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 25.6,
+            "error_upper": 9.9,
+            "error_lower": 9.9,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 0.92,
+            "error_upper": 0.06,
+            "error_lower": 0.06,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 9.7,
+            "error_upper": 2.3,
+            "error_lower": 2.3,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}

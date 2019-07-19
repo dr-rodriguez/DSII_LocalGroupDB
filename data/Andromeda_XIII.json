@@ -1,0 +1,84 @@
+{
+    "name": "Andromeda XIII",
+    "ra": [
+        {
+            "value": 12.9625,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 33.00444,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.082,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "distance_modulus": [
+        {
+            "value": 24.62,
+            "error_upper": 0.05,
+            "error_lower": 0.05,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -185.4,
+            "error_upper": 2.4,
+            "error_lower": 2.4,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 18.1,
+            "error_upper": 1.2,
+            "error_lower": 1.2,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "surface_brightness": [
+        {
+            "value": 27.3,
+            "error_upper": 1.3,
+            "error_lower": 1.3,
+            "best": 1,
+            "unit": "mag/sq.arcsec",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 0.78,
+            "error_upper": 0.08,
+            "error_lower": 0.08,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ],
+    "stellar_radial_velocity_dispersion": [
+        {
+            "value": 5.8,
+            "error_upper": 2.0,
+            "error_lower": 2.0,
+            "best": 1,
+            "unit": "km/s",
+            "reference": ""
+        }
+    ]
+}
