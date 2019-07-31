@@ -140,6 +140,11 @@ class Database(object):
                             temp_list = list(filter(lambda y: y[key[1]] < sub_value, elem[key[0]]))
                         elif db_operator == '$lte':
                             temp_list = list(filter(lambda y: y[key[1]] <= sub_value, elem[key[0]]))
+                        elif db_operator == '$exists':
+                            if sub_value:
+                                temp_list = list(filter(lambda y: key[1] in y, elem[key[0]]))
+                            else:
+                                temp_list = list(filter(lambda y: key[1] not in y, elem[key[0]]))
                         elif db_operator == '$or':
                             # Special logic for $or (run each sub_query in the or list against the current element)
                             temp_list = []

@@ -20,11 +20,16 @@ db.save_from_db(db.db[0], save=True)
 db.query({'name': 'And XXX'})
 db.query({'ra.value': 10.68458})
 
-# Example query with operator
+# Example query with operators ($)
 query = {'surface_brightness.value': {'$gt': 27}}
 db.query(query=query)
 df = db.table(query=query)
 df[['name', 'surface_brightness']]
+
+# Example $exists query
+query = {'stellar_radial_velocity_dispersion.value': {'$exists': True}}
+db.query(query=query)
+db.table(query=query)[['name', 'stellar_radial_velocity_dispersion']]
 
 # Example AND query
 query = {'surface_brightness.value': {'$gt': 27}, 'radial_velocity.value': {'$lte': -100}}
