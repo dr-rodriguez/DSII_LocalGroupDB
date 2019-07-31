@@ -100,8 +100,11 @@ class Database(object):
         for key, value in query.items():
             # Use things like dec.value to query [value] for each element in [dec]
             key_list = key.split('.')
-            out_result = self._sub_query(out_result, key_list[0])
-            if len(out_result) > 1:
+            if not key_list[0].startswith('$'):
+                out_result = self._sub_query(out_result, key_list[0])
+                if len(out_result) > 1:
+                    out_result = self._sub_query(out_result, key_list, value)
+            else:
                 out_result = self._sub_query(out_result, key_list, value)
 
         return out_result
@@ -109,16 +112,26 @@ class Database(object):
     def _sub_query(self, doc_list, key, value=None):
         # Method to perform query, called by _query_manual
 
+        special_operator = False
+        if isinstance(key, list) and key[0].startswith('$'):
+            # Handle cases that start with $ like $or statements
+            special_operator = True
+
         if value is None:
             # Basically check if this key exists
             out_result = np.array(list(filter(lambda new_doc: key in new_doc, doc_list)))
         else:
-            if isinstance(key, list) and len(key) > 1:
+            if (isinstance(key, list) and len(key) > 1) or special_operator:
                 ind_list = []
                 for i, elem in enumerate(doc_list):
-                    if isinstance(value, dict):
+                    if isinstance(value, dict) or isinstance(value, list):
                         # Special operator
-                        operator, sub_value = list(value.items())[0]
+                        if isinstance(value, list):
+                            # Handle cases with $or
+                            operator = key[0]
+                            sub_value = value
+                        else:
+                            operator, sub_value = list(value.items())[0]
                         if operator == '$gt':
                             temp_list = list(filter(lambda y: y[key[1]] > sub_value, elem[key[0]]))
                         elif operator == '$gte':
@@ -127,6 +140,17 @@ class Database(object):
                             temp_list = list(filter(lambda y: y[key[1]] < sub_value, elem[key[0]]))
                         elif operator == '$lte':
                             temp_list = list(filter(lambda y: y[key[1]] <= sub_value, elem[key[0]]))
+                        elif operator == '$or':
+                            # Special logic for $or (run each sub_query in the or list against the current element)
+                            temp_list = []
+                            for sub_sub_query in sub_value:
+                                for k, v in sub_sub_query.items():
+                                    # Use things like dec.value to query [value] for each element in [dec]
+                                    key_list = k.split('.')
+                                    temp = self._sub_query(np.array([elem]), key_list[0])
+                                    if len(temp) > 0:
+                                        temp = self._sub_query(temp, key_list, v)
+                                    temp_list += list(temp)
                         else:
                             raise RuntimeError('ERROR: {} not yet supported'.format(operator))
                     else:
