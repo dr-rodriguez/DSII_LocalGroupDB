@@ -129,7 +129,11 @@ with open('NearbyGalaxies.dat', 'r') as f:
             e = v[0]
             if (e['value'] == 99.99 and e['error_upper'] == 9.99) or \
                 (e['value'] == 999.9 and e['error_upper'] == 99.9) or \
+                (e['value'] == 99.9 and e['error_upper'] == 99.9) or \
                 (e['value'] == 99.9 and e['error_upper'] == 9.9) or \
+                (e['value'] == 9.9 and e['error_upper'] == 9.9) or \
+                (e['value'] == 99.0 and e['error_upper'] == 9.0) or \
+                (e['value'] == 999.0 and e['error_upper'] == 99.0) or \
                 (e['value'] == 9.99 and e['error_upper'] == 9.99):
                 del json_dict[k]
 

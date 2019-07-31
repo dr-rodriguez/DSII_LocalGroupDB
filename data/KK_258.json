@@ -69,15 +69,5 @@
             "unit": "mag/sq.arcsec",
             "reference": ""
         }
-    ],
-    "stellar_radial_velocity_dispersion": [
-        {
-            "value": 99.9,
-            "error_upper": 99.9,
-            "error_lower": 99.9,
-            "best": 1,
-            "unit": "km/s",
-            "reference": ""
-        }
     ]
 }
