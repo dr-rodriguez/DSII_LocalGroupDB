@@ -6,6 +6,12 @@
             "best": 1,
             "reference": "",
             "unit": "deg"
+        },
+        {
+            "value": 999.14542,
+            "best": 0,
+            "reference": "FakeRef2019",
+            "unit": "deg"
         }
     ],
     "dec": [
