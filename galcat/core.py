@@ -128,19 +128,19 @@ class Database(object):
                         # Special operator
                         if isinstance(value, list):
                             # Handle cases with $or
-                            operator = key[0]
+                            db_operator = key[0]
                             sub_value = value
                         else:
-                            operator, sub_value = list(value.items())[0]
-                        if operator == '$gt':
+                            db_operator, sub_value = list(value.items())[0]
+                        if db_operator == '$gt':
                             temp_list = list(filter(lambda y: y[key[1]] > sub_value, elem[key[0]]))
-                        elif operator == '$gte':
+                        elif db_operator == '$gte':
                             temp_list = list(filter(lambda y: y[key[1]] >= sub_value, elem[key[0]]))
-                        elif operator == '$lt':
+                        elif db_operator == '$lt':
                             temp_list = list(filter(lambda y: y[key[1]] < sub_value, elem[key[0]]))
-                        elif operator == '$lte':
+                        elif db_operator == '$lte':
                             temp_list = list(filter(lambda y: y[key[1]] <= sub_value, elem[key[0]]))
-                        elif operator == '$or':
+                        elif db_operator == '$or':
                             # Special logic for $or (run each sub_query in the or list against the current element)
                             temp_list = []
                             for sub_sub_query in sub_value:
@@ -152,7 +152,7 @@ class Database(object):
                                         temp = self._sub_query(temp, key_list, v)
                                     temp_list += list(temp)
                         else:
-                            raise RuntimeError('ERROR: {} not yet supported'.format(operator))
+                            raise RuntimeError('ERROR: {} not yet supported'.format(db_operator))
                     else:
                         temp_list = list(filter(lambda y: y[key[1]] == value, elem[key[0]]))
                     if len(temp_list) > 0:
