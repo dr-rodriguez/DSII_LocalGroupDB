@@ -51,9 +51,36 @@ class Database(object):
                 out_doc[key] = val
         return out_doc
 
-    def save_from_db(self):
-        # Save a JSON representation to disk
-        pass
+    def _recursive_json_reverse_fix(self, doc):
+        out_doc = {}
+        for key, val in doc.items():
+            if isinstance(val, dict):
+                out_doc[key] = self._recursive_json_fix(val)
+            elif isinstance(val, type(np.array([]))):
+                new_array = []
+                for elem in val:
+                    new_val = self._recursive_json_fix(elem)
+                    new_array.append(new_val)
+                out_doc[key] = new_array
+            else:
+                out_doc[key] = val
+        return out_doc
+
+    def save_from_db(self, doc, verbose=False, out_dir='', save=False, name=''):
+        # Save a JSON representation
+        out_doc = self._recursive_json_reverse_fix(doc)
+        out_json = json.dumps(out_doc, indent=4, sort_keys=False)
+        if verbose:
+            print(out_json)
+        if save:
+            if not name:
+                name = doc['name']
+                name = name.strip().replace(' ', '_') + '.json'
+            filename = os.path.join(out_dir, name)
+            print(filename)
+            with open(os.path.join(out_dir, filename), 'w') as f:
+                f.write(out_json)
+        return
 
     def query(self, query):
         if self.use_mongodb:
@@ -73,8 +100,45 @@ class Database(object):
         for key, value in query.items():
             # Use things like dec.value to query [value] for each element in [dec]
             key_list = key.split('.')
+            out_result = self._sub_query(out_result, key_list[0])
+            if len(out_result) > 1:
+                out_result = self._sub_query(out_result, key_list, value)
 
-        return self.db
+        return out_result
+
+    def _sub_query(self, doc_list, key, value=None):
+        # Method to perform query, called by _query_manual
+
+        if value is None:
+            # Basically check if this key exists
+            out_result = np.array(list(filter(lambda new_doc: key in new_doc, doc_list)))
+        else:
+            if isinstance(key, list) and len(key) > 1:
+                ind_list = []
+                for i, elem in enumerate(doc_list):
+                    if isinstance(value, dict):
+                        # Special operator
+                        operator, sub_value = list(value.items())[0]
+                        if operator == '$gt':
+                            temp_list = list(filter(lambda y: y[key[1]] > sub_value, elem[key[0]]))
+                        elif operator == '$gte':
+                            temp_list = list(filter(lambda y: y[key[1]] >= sub_value, elem[key[0]]))
+                        elif operator == '$lt':
+                            temp_list = list(filter(lambda y: y[key[1]] < sub_value, elem[key[0]]))
+                        elif operator == '$lte':
+                            temp_list = list(filter(lambda y: y[key[1]] <= sub_value, elem[key[0]]))
+                        else:
+                            raise RuntimeError('ERROR: {} not yet supported'.format(operator))
+                    else:
+                        temp_list = list(filter(lambda y: y[key[1]] == value, elem[key[0]]))
+                    if len(temp_list) > 0:
+                        ind_list.append(i)
+                out_result = doc_list[ind_list]
+            else:
+                # Straight-forward check, for things that are not embedded (eg, name)
+                out_result = np.array(list(filter(lambda doc: doc[key[0]] == value, doc_list)))
+
+        return out_result
 
     def table(self, query={}, selection={}):
         # Get nicely-formatted table of all results (or of the query)
@@ -86,15 +150,16 @@ class Database(object):
         for entry in results:
             out_row = {}
             for key, val in entry.items():
-                if key in selection.keys():
-                    # TODO: select specified one
-                    pass
-                elif not isinstance(val, (list, type(np.array([])))):
+                if not isinstance(val, (list, type(np.array([])))):
                     out_row[key] = val
                 else:
                     # Select best one to return
                     if len(val) > 1:
-                        ind = np.array([x['best'] for x in val]) == 1
+                        if key in selection.keys():
+                            # If selection listed a key, use the reference information there
+                            ind = np.array([x['reference'] for x in val]) == selection[key]
+                        else:
+                            ind = np.array([x['best'] for x in val]) == 1
                         out_row[key] = val[ind][0]['value']
                     else:
                         out_row[key] = val[0]['value']
