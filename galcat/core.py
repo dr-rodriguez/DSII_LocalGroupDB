@@ -1,6 +1,7 @@
 # Core functionality for database implementation
 import os
 import json
+import numpy as np
 import pandas as pd
 
 
@@ -15,7 +16,7 @@ class Database(object):
             pass
             # self.use_mongodb = True
         else:
-            self.db = []
+            self.db = np.array([])
             self.load_all(directory)
 
     def load_all(self, directory):
@@ -30,7 +31,25 @@ class Database(object):
         # Load JSON file to database
         with open(filename, 'r') as f:
             doc = json.load(f)
-        self.db.append(doc)
+
+        doc = self._recursive_json_fix(doc)
+
+        self.db = np.append(self.db, doc)
+
+    def _recursive_json_fix(self, doc):
+        out_doc = {}
+        for key, val in doc.items():
+            if isinstance(val, dict):
+                out_doc[key] = self._recursive_json_fix(val)
+            elif isinstance(val, list):
+                new_array = np.array([])
+                for elem in val:
+                    new_val = self._recursive_json_fix(elem)
+                    new_array = np.append(new_array, new_val)
+                out_doc[key] = new_array
+            else:
+                out_doc[key] = val
+        return out_doc
 
     def save_from_db(self):
         # Save a JSON representation to disk
@@ -51,6 +70,10 @@ class Database(object):
     def _query_manual(self, query):
         # Manually execute query to in-memory database
         out_result = self.db
+        for key, value in query.items():
+            # Use things like dec.value to query [value] for each element in [dec]
+            key_list = key.split('.')
+
         return self.db
 
     def table(self, query={}, selection={}):
@@ -62,19 +85,19 @@ class Database(object):
         tab_data = []
         for entry in results:
             out_row = {}
-            for key, value in entry.items():
+            for key, val in entry.items():
                 if key in selection.keys():
                     # TODO: select specified one
                     pass
-                elif not isinstance(value, list):
-                    out_row[key] = value
+                elif not isinstance(val, (list, type(np.array([])))):
+                    out_row[key] = val
                 else:
-                    # TODO: select best one
-                    if len(value) > 1:
-                        # Select best one
-                        pass
+                    # Select best one to return
+                    if len(val) > 1:
+                        ind = np.array([x['best'] for x in val]) == 1
+                        out_row[key] = val[ind][0]['value']
                     else:
-                        out_row[key] = value[0]['value']
+                        out_row[key] = val[0]['value']
             tab_data.append(out_row)
 
         # Convert to pandas
