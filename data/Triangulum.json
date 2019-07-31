@@ -51,16 +51,6 @@
             "reference": ""
         }
     ],
-    "surface_brightness": [
-        {
-            "value": 99.9,
-            "error_upper": 9.9,
-            "error_lower": 9.9,
-            "best": 1,
-            "unit": "mag/sq.arcsec",
-            "reference": ""
-        }
-    ],
     "stellar_radial_velocity_dispersion": [
         {
             "value": 99.9,

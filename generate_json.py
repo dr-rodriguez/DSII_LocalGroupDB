@@ -6,7 +6,7 @@ with open('NearbyGalaxies.dat', 'r') as f:
     for i, line in enumerate(f):
         if i < 37:
             continue
-        if i > 37: break
+        # if i > 37: break  # run only on one file
         print(line)
 
         name = line[:19].strip()
@@ -129,11 +129,12 @@ with open('NearbyGalaxies.dat', 'r') as f:
             e = v[0]
             if (e['value'] == 99.99 and e['error_upper'] == 9.99) or \
                 (e['value'] == 999.9 and e['error_upper'] == 99.9) or \
+                (e['value'] == 99.9 and e['error_upper'] == 9.9) or \
                 (e['value'] == 9.99 and e['error_upper'] == 9.99):
                 del json_dict[k]
 
         json_data = json.dumps(json_dict, indent=4, sort_keys=False)
-        print(json_data)
+        # print(json_data)
 
         # Write to file
         out_dir = 'data'
