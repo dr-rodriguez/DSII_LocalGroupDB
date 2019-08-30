@@ -12,13 +12,14 @@ db.db
 df = db.table()
 df.head()
 
-# Example to save JSON data to file
-db.save_from_db(db.db[0], verbose=True)
-db.save_from_db(db.db[0], save=True)
-
 # Simple query examples
 db.query({'name': 'And XXX'})
 db.query({'ra.value': 10.68458})
+
+# Example to save JSON data to file
+doc = db.query({'name': 'And XXX'})[0]
+db.save_from_db(doc, verbose=True)
+db.save_from_db(doc, save=True)
 
 # Example query with operators ($)
 query = {'surface_brightness.value': {'$gt': 27}}
@@ -62,3 +63,15 @@ db.table(query=query, selection={'ra': 'FakeRef2019'})[['name', 'ra', 'dec']]
 
 # TODO: Add entry to existing field
 # TODO: Update entry
+
+# Using mongodb
+# If localhost you must be running a local mongodb server
+from galcat.core import *
+db = Database(conn_string='localhost', mongo_db_name='GalaxyCat', collection_name='galaxies')
+
+# If no database exists, can create it from the directory (will also update existing documents)
+# db.load_all('data')
+
+# All queries from above (should) work the same in MongoDB
+doc = db.query({'name': 'And XXX'})[0]
+db.save_from_db(doc, verbose=True)

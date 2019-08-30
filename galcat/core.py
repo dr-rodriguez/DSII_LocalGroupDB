@@ -6,15 +6,22 @@ import pandas as pd
 
 
 class Database(object):
-    def __init__(self, directory='data', conn_string=''):
+    def __init__(self, directory='data', conn_string='', mongo_db_name='', collection_name=''):
         # Load or establish connection
 
         self.use_mongodb = False
 
-        if conn_string:
+        if conn_string and mongo_db_name and collection_name:
             # Connect to mongoDB
-            pass
-            # self.use_mongodb = True
+            try:
+                import pymongo
+                self.use_mongodb = True
+                client = pymongo.MongoClient(conn_string)
+                database = client[mongo_db_name]  # database
+                self.db = database[collection_name]  # collection
+            except ImportError:
+                print('ERROR : pymongo package required for using MongoDB')
+                self.use_mongodb = False
         else:
             self.db = np.array([])
             self.load_all(directory)
@@ -25,18 +32,34 @@ class Database(object):
             if filename.startswith('.') or not filename.endswith('.json'):
                 continue
 
-            self.load_to_db(os.path.join(directory, filename))
+            self.load_file_to_db(os.path.join(directory, filename))
 
-    def load_to_db(self, filename):
+    def load_file_to_db(self, filename):
         # Load JSON file to database
         with open(filename, 'r') as f:
             doc = json.load(f)
 
-        doc = self._recursive_json_fix(doc)
+        if self.use_mongodb:
+            self.load_to_mongodb(doc)
+        else:
+            doc = self._recursive_json_fix(doc)
+            self.db = np.append(self.db, doc)
 
-        self.db = np.append(self.db, doc)
+    def load_to_mongodb(self, doc, id_column='name'):
+        # Load JSON file to MongoDB
+
+        # Use name as the unique ID (may want to change later)
+        id_value = doc[id_column]
+
+        # Revert arrays to lists to make correct JSON documents
+        doc = self._recursive_json_reverse_fix(doc)
+
+        # This uses replace_one to replace any existing document that matches the filter.
+        # If none is matched, upsert=True creates a new document.
+        result = self.db.replace_one(filter={id_column: id_value}, replacement=doc, upsert=True)
 
     def _recursive_json_fix(self, doc):
+        # Recursively fix a JSON document to convert lists to numpy arrays
         out_doc = {}
         for key, val in doc.items():
             if isinstance(val, dict):
@@ -52,7 +75,13 @@ class Database(object):
         return out_doc
 
     def _recursive_json_reverse_fix(self, doc):
+        # Undo the work from _recursive_json_fix; that is turn arrays to list to make correct JSON documents
         out_doc = {}
+
+        # Remove _id if present (used in MongoDB)
+        if self.use_mongodb and '_id' in doc.keys():
+            del doc['_id']
+
         for key, val in doc.items():
             if isinstance(val, dict):
                 out_doc[key] = self._recursive_json_fix(val)
@@ -92,7 +121,11 @@ class Database(object):
 
     def _query_mongodb(self, query):
         # Send query to MondoDB
-        return None
+
+        cursor = self.db.find(query)
+        out_result = np.array([self._recursive_json_fix(d) for d in cursor])
+
+        return out_result
 
     def _query_manual(self, query):
         # Manually execute query to in-memory database
