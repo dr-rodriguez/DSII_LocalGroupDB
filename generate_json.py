@@ -2,7 +2,7 @@
 import os
 import json
 
-with open('NearbyGalaxies.dat', 'r') as f:
+with open('input/NearbyGalaxies.dat', 'r') as f:
     for i, line in enumerate(f):
         if i < 37:
             continue

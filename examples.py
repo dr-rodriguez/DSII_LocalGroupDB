@@ -9,8 +9,9 @@ db = Database()
 db.db
 
 # Full database as a table of best values
+# This is now QTable so df.head() doesn't work
 df = db.table()
-df.head()
+df
 
 # Simple query examples
 db.query({'name': 'And XXX'})
