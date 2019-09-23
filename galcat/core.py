@@ -3,6 +3,9 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from astropy.table import QTable
+from astropy import units as u
+from astropy.units import Quantity
 
 
 class Database(object):
@@ -202,6 +205,17 @@ class Database(object):
 
         return out_result
 
+    def _store_quantity(self, val, unit):
+        # Method to convert a value to a Quantity, if a unit is provided
+        if unit:
+            try:
+                val = Quantity(val, unit=unit)
+            except ValueError:
+                # Ignore unrecognized units
+                pass
+
+        return val
+
     def table(self, query={}, selection={}):
         # Get nicely-formatted table of all results (or of the query)
         # selection is a dictionary with the field value and the reference to use for it (otherwise will pick best=1)
@@ -222,12 +236,19 @@ class Database(object):
                             ind = np.array([x['reference'] for x in val]) == selection[key]
                         else:
                             ind = np.array([x['best'] for x in val]) == 1
-                        out_row[key] = val[ind][0]['value']
+                        unit = val[ind][0].get('unit')
+                        temp_val = val[ind][0]['value']
+                        out_row[key] = self._store_quantity(temp_val, unit)
                     else:
-                        out_row[key] = val[0]['value']
+                        unit = val[0].get('unit')
+                        temp_val = val[0]['value']
+                        out_row[key] = self._store_quantity(temp_val, unit)
+
             tab_data.append(out_row)
 
-        # Convert to pandas
-        df = pd.DataFrame(tab_data)
+        # Convert to QTable
+        temp = pd.DataFrame(tab_data)  # use pandas as intermediary format
+        df = QTable.from_pandas(temp)
+        # df = QTable(tab_data)
 
         return df

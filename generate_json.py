@@ -107,7 +107,7 @@ with open('NearbyGalaxies.dat', 'r') as f:
                      'surface_brightness': [{'value': muv,
                                              'error_upper': muv_upp,
                                              'error_lower': muv_low,
-                                             'best': 1, 'unit': 'mag/sq.arcsec',
+                                             'best': 1, 'unit': 'mag/(arcsec*arcsec)',
                                              'reference': ''}],
                      'half-light_radius': [{'value': rh,
                                             'error_upper': rh_upp,

@@ -76,7 +76,7 @@
             "error_upper": 9.9,
             "error_lower": 9.9,
             "best": 1,
-            "unit": "mag/sq.arcsec",
+            "unit": "mag/(arcsec*arcsec)",
             "reference": ""
         }
     ],
