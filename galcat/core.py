@@ -4,7 +4,6 @@ import json
 import numpy as np
 import pandas as pd
 from astropy.table import QTable
-from astropy import units as u
 from astropy.units import Quantity
 
 
@@ -249,6 +248,5 @@ class Database(object):
         # Convert to QTable
         temp = pd.DataFrame(tab_data)  # use pandas as intermediary format
         df = QTable.from_pandas(temp)
-        # df = QTable(tab_data)
 
         return df

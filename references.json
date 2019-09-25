@@ -1,0 +1,36 @@
+[
+  {
+    "key": "Bellazzini_2006_1",
+    "id": 1,
+    "year": 2006,
+    "doi": "",
+    "bibcode": "",
+    "authors": [
+      "Bellazzini, M.",
+      "Ibata, R.",
+      "Martin, N.",
+      "Lewis, G. F.",
+      "Conn, B.",
+      "Irwin, M. J."
+    ],
+    "journal": "MNRAS",
+    "title": "The core of the Canis Major galaxy as traced by red clump stars"
+  },
+  {
+    "key": "Martin_2005_1",
+    "id": 2,
+    "year": 2005,
+    "doi": "",
+    "bibcode": "",
+    "authors": [
+      "Martin, N. F.",
+      "Ibata, R. A.",
+      "Conn, B. C.",
+      "Lewis, G. F.",
+      "Bellazzini, M.",
+      "Irwin, M. J."
+    ],
+    "journal": "MNRAS",
+    "title": "A radial velocity survey of low Galactic latitude structures - I. Kinematics of the Canis Major dwarf galaxy"
+  }
+]
