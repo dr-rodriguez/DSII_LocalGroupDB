@@ -8,9 +8,23 @@ from astropy.units import Quantity
 
 
 class Database(object):
-    def __init__(self, directory='data', conn_string='', mongo_db_name='', collection_name=''):
-        # Load or establish connection
+    def __init__(self, directory='data', conn_string='', mongo_db_name='', collection_name='',
+                 references_file='references.json', references_collection='references'):
+        """
+        Database connection object which will prepare or load a database.
+        It also includes a collection of references.
 
+        Parameters
+        ----------
+        directory
+        conn_string
+        mongo_db_name
+        collection_name
+        references_file
+        references_collection
+        """
+
+        # Load or establish connection
         self.use_mongodb = False
 
         if conn_string and mongo_db_name and collection_name:
@@ -20,12 +34,19 @@ class Database(object):
                 self.use_mongodb = True
                 client = pymongo.MongoClient(conn_string)
                 database = client[mongo_db_name]  # database
+                self.references = database[references_collection]
                 self.db = database[collection_name]  # collection
             except ImportError:
                 print('ERROR : pymongo package required for using MongoDB')
                 self.use_mongodb = False
         else:
             self.db = np.array([])
+            if not os.path.exists(references_file):
+                msg = 'ERROR: A json file of references must be provided.'
+                print(msg)
+                raise RuntimeError(msg)
+            with open(references_file, 'r') as f:
+                self.references = json.load(f)
             self.load_all(directory)
 
     def load_all(self, directory):
@@ -59,6 +80,25 @@ class Database(object):
         # This uses replace_one to replace any existing document that matches the filter.
         # If none is matched, upsert=True creates a new document.
         result = self.db.replace_one(filter={id_column: id_value}, replacement=doc, upsert=True)
+
+    def update_references_mongodb(self, references_file, id_column='key'):
+        """
+        Method to load references from a provided file to the MongoDB database
+
+        Parameters
+        ----------
+        references_file : str
+            Name of references JSON file to load
+        id_column : str
+            Name of ID column to use to match against existing documents (default: key)
+        """
+
+        with open(references_file, 'r') as f:
+            references = json.load(f)
+
+        for doc in references:
+            id_value = doc[id_column]
+            result = self.references.replace_one(filter={id_column: id_value}, replacement=doc, upsert=True)
 
     def _recursive_json_fix(self, doc):
         # Recursively fix a JSON document to convert lists to numpy arrays
@@ -113,11 +153,44 @@ class Database(object):
                 f.write(out_json)
         return
 
-    def query(self, query):
+    def query(self, query, embed_ref=False, ref_id_column='key'):
         if self.use_mongodb:
             result = self._query_mongodb(query)
         else:
             result = self._query_manual(query)
+
+        # Embed the reference dict in place of the key
+        if embed_ref:
+            for doc in result:
+                for key, value in doc.items():
+                    if not isinstance(value, (list, np.ndarray)):
+                        continue
+                    for i, each_val in enumerate(value):
+                        ref_key = each_val.get('reference')
+                        if ref_key:
+                            ref = self.query_reference({ref_id_column: ref_key})
+                            if ref:
+                                doc[key][i]['reference'] = ref[0]
+
+        return result
+
+    def query_reference(self, query):
+        if self.use_mongodb:
+            result = list(self.references.find(query))
+            for r in result:
+                # Remove the internal MongoDB IDs
+                del r['_id']
+        else:
+            result = self.references
+            for key, value in query.items():
+                # Use things like dec.value to query [value] for each element in [dec]
+                key_list = key.split('.')
+                if not key_list[0].startswith('$'):
+                    result = self._sub_query(result, key_list[0])
+                    if len(result) > 1:
+                        result = self._sub_query(result, key_list, value)
+                else:
+                    result = self._sub_query(result, key_list, value)
 
         return result
 

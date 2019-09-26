@@ -56,28 +56,44 @@ The absolute minimum will probably be just be the key (as author_year_integer), 
 import json
 import requests
 import urllib.parse
+import ads
 from dsii_secrets import ads_api_key
 
-# Get references data
-with open('references.json', 'r') as f:
-    refs = json.load(f)
+# Example query
+papers = list(ads.SearchQuery(q="The core of the Canis Major galaxy as traced by red clump stars"))
+papers = list(ads.SearchQuery(author="Bellazzini", year=2006))
+papers = list(ads.SearchQuery(first_author="Bellazzini", year=2006,
+                              q='The core of the Canis Major galaxy as traced by red clump stars'))
 
-# TODO: Look into https://ads.readthedocs.io/en/latest/ for simpler ways to search
-
-# Construct calls to ADS
-base_url = 'https://api.adsabs.harvard.edu/v1/search/query?'
-# headers = 'Authorization: Bearer:{}'.format(ads_api_key)
-headers = {'Authorization: Bearer': ads_api_key}
-
-# Logic to search with
-
-query = 'The core of the Canis Major galaxy as traced by red clump stars'
-url = '{}q={}'.format(base_url, urllib.parse.quote(query))
+for p in papers:
+    print(p.year, p.author[0], p.title, p.bibcode, p.doi)
 
 # Bellazzini_2006_1
 # 10.1111/j.1365-2966.2005.09973.x
 # 2006MNRAS.366..865B
 
+# Get references data
+with open('references.json', 'r') as f:
+    refs = json.load(f)
+
+for ref in refs:
+    if ref.get('bibcode', '') == '' or ref.get('doi', '') == '':
+        author = ref.get('authors', [])[0]
+        year = ref.get('year')
+        title = ref.get('title')
+
+        papers = list(ads.SearchQuery(first_author=author, year=year, title=title))
+        if len(papers) == 1:
+            p = papers[0]
+
+            ref['bibcode'] = p.bibcode
+            ref['doi'] = p.doi[0]
+
+            print(ref)
+        elif len(papers) > 1:
+            print('Warning: more than one paper matched')
+            for p in papers:
+                print(p.year, p.author[0], p.title, p.bibcode, p.doi)
 
 # Output to file
 out_refs = json.dumps(refs, indent=2, sort_keys=False)

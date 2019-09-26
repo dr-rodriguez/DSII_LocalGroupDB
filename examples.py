@@ -15,6 +15,7 @@ df
 
 # Simple query examples
 db.query({'name': 'And XXX'})
+db.query({'name': 'And XXX'}, embed_ref=True)  # embed reference dict in place of the reference key
 db.query({'ra.value': 10.68458})
 
 # Example to save JSON data to file
@@ -62,6 +63,10 @@ db.query(query=query)
 db.table(query=query)[['name', 'ra', 'dec']]
 db.table(query=query, selection={'ra': 'FakeRef2019'})[['name', 'ra', 'dec']]
 
+# Query references table
+db.query_reference({'id': 1})
+db.query_reference({'key': 'Bellazzini_2006_1'})[0]
+
 # TODO: Add entry to existing field
 # TODO: Update entry
 
@@ -72,6 +77,8 @@ db = Database(conn_string='localhost', mongo_db_name='GalaxyCat', collection_nam
 
 # If no database exists, can create it from the directory (will also update existing documents)
 # db.load_all('data')
+# Update references, if needed
+# db.update_references_mongodb('references.json')
 
 # All queries from above (should) work the same in MongoDB
 doc = db.query({'name': 'And XXX'})[0]
