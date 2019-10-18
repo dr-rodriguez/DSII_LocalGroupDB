@@ -261,7 +261,7 @@ class Database(object):
 
             old_values = old_doc.get(k)
             if old_values is None:
-                old_doc[k] = [v]
+                old_doc[k] = np.array(v)
             else:
                 old_doc[k] = np.append(old_doc[k], [v])
 

@@ -75,9 +75,11 @@ db.query_reference({'key': 'Bellazzini_2006_1'})[0]
 
 # Update entries with new data from JSON file
 db.load_file_to_db('data/And_XXX.json')  # reset (in case using MongoDB or if I run add_data more than once)
+db.query({'name': 'And XXX'})[0]
 db.query({'name': 'And XXX'})[0]['ra']
 db.query({'name': 'And XXX'})[0]['ebv']
 db.add_data('new_data.json')
+db.query({'name': 'And XXX'})[0]['fake_quantity']
 db.table(query={'name': 'And XXX'}, selection={'ebv': 'Penguin_2020_1'})[['name','ra','ebv']]
 db.save_all(out_dir='data')
 
