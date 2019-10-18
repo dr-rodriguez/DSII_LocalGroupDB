@@ -18,6 +18,12 @@ db.query({'name': 'And XXX'})
 db.query({'name': 'And XXX'}, embed_ref=True)  # embed reference dict in place of the reference key
 db.query({'ra.value': 10.68458})
 
+# Pretty print results, with embedded reference
+doc = db.query({'name': 'And XXX'})[0]['ebv'][0]
+print(json.dumps(doc, indent=4, sort_keys=False))
+doc = db.query({'name': 'And XXX'}, embed_ref=True)[0]['ebv'][0]
+print(json.dumps(doc, indent=4, sort_keys=False))
+
 # Example to save JSON data to file
 doc = db.query({'name': 'And XXX'})[0]
 db.save_from_db(doc, verbose=True)

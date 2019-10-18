@@ -101,7 +101,21 @@ class Database(object):
             result = self.references.replace_one(filter={id_column: id_value}, replacement=doc, upsert=True)
 
     def _recursive_json_fix(self, doc):
-        # Recursively fix a JSON document to convert lists to numpy arrays
+        """
+        Recursively fix a JSON document to convert lists to numpy arrays.
+        This is needed for queries against the MongoDB database.
+
+        Parameters
+        ----------
+        doc : dict
+            Document result from a query against a MongoDB database
+
+        Returns
+        -------
+        out_doc : dict
+            Fixed document
+        """
+
         out_doc = {}
         for key, val in doc.items():
             if isinstance(val, dict):
@@ -117,7 +131,21 @@ class Database(object):
         return out_doc
 
     def _recursive_json_reverse_fix(self, doc):
-        # Undo the work from _recursive_json_fix; that is turn arrays to list to make correct JSON documents
+        """
+        Undo the work from _recursive_json_fix; that is turn arrays to list to make correct JSON documents.
+        This is needed since MongoDB does not understand numpy arrays.
+
+        Parameters
+        ----------
+        doc : dict
+            Document result to convert
+
+        Returns
+        -------
+        out_doct : dict
+            Fixed document
+        """
+
         out_doc = {}
 
         # Remove _id if present (used in MongoDB)
@@ -138,6 +166,23 @@ class Database(object):
         return out_doc
 
     def save_from_db(self, doc, verbose=False, out_dir='', save=False, name=''):
+        """
+        Save a JSON representation of the document. Useful for exporting database contents.
+
+        Parameters
+        ----------
+        doc :
+            Document result from a query
+        verbose : bool
+            Flag to indicate whether the JSON representation should be printed in the terminal (Default: False)
+        out_dir : str
+            Directory to save JSON file (Default: '')
+        save : bool
+            Flag to indicate if the JSON represenation should be saved
+        name : str
+            Name of output JSON file. If none is provided, the 'name' field is used to name it. (Default: '')
+        """
+
         # Save a JSON representation
         out_doc = self._recursive_json_reverse_fix(doc)
         out_json = json.dumps(out_doc, indent=4, sort_keys=False)
@@ -154,6 +199,35 @@ class Database(object):
         return
 
     def query(self, query, embed_ref=False, ref_id_column='key'):
+        """
+        Perform a database query with MongoDB's query language.
+        Examples:
+            db.query({'name': 'And XXX'})
+            db.query({'ra.value': 10.68458})
+        Query examples:
+            Greather than case: query = {'surface_brightness.value': {'$gt': 27}}
+            EXISTS case: query = {'stellar_radial_velocity_dispersion.value': {'$exists': True}}
+            AND case: query = {'surface_brightness.value': {'$gt': 27}, 'radial_velocity.value': {'$lte': -100}}
+            OR case: query = {'$or': [{'ra.value': 10.68458}, {'dec.value': 49.64667}]}
+            AND and OR case: query = {'surface_brightness.value': {'$gt': 27}, '$or': [
+                {'surface_brightness.error_upper': {'$lte': 0.5}},
+                {'surface_brightness.error_lower': {'$gte': 1.0}}]}
+
+        Parameters
+        ----------
+        query : dict
+            Query to perform. Uses MongoDB's query language.
+        embed_ref : bool
+            Flag whether or not references should be embedded in the output document (Default: False)
+        ref_id_column : str
+            Field name to use when matching references (Default: 'key')
+
+        Returns
+        -------
+        result : np.array
+            Numpy array of document results
+        """
+
         if self.use_mongodb:
             result = self._query_mongodb(query)
         else:
@@ -175,6 +249,22 @@ class Database(object):
         return result
 
     def query_reference(self, query):
+        """
+        Query references. Examples:
+            db.query_reference({'id': 1})
+            db.query_reference({'key': 'Bellazzini_2006_1'})[0]
+
+        Parameters
+        ----------
+        query : dict
+            Query to use. Uses MongoDB's query language.
+
+        Returns
+        -------
+        result : np.array
+            Numpy array of document results
+        """
+
         if self.use_mongodb:
             result = list(self.references.find(query))
             for r in result:
@@ -289,8 +379,24 @@ class Database(object):
         return val
 
     def table(self, query={}, selection={}):
-        # Get nicely-formatted table of all results (or of the query)
-        # selection is a dictionary with the field value and the reference to use for it (otherwise will pick best=1)
+        """
+        Get a formatted table of all query results. When multiple results are present for a single value, the best one
+        is picked unless the user specifies a selection. This functionality will be revisited in the future.
+        The output is as a QTable which allows Quantities to be embedded in the results.
+
+        Parameters
+        ----------
+        query : dict
+            Query to use in MongoDB query language. Default is an empty dictionary for all results.
+        selection : dict
+            Dictionary with the field value and reference to use for it (otherwise will pick best=1)
+
+        Returns
+        -------
+        df : astropy.table.QTable
+            Astropy QTable of results
+        """
+
         results = self.query(query=query)
 
         # For each entry in result, select best field.value or what the user has specified
