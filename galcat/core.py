@@ -57,16 +57,33 @@ class Database(object):
 
             self.load_file_to_db(os.path.join(directory, filename))
 
-    def load_file_to_db(self, filename):
-        # Load JSON file to database
+    def load_file_to_db(self, filename, id_column='name'):
+        """
+        Load JSON file to database. If the document already exists (as matched by id_column), it gets updated.
+
+        Parameters
+        ----------
+        filename : str
+            Name of JSON file to add
+        id_column : str
+            Name of field to use for matching (Default: 'name')
+        """
+
         with open(filename, 'r') as f:
             doc = json.load(f)
 
         if self.use_mongodb:
-            self.load_to_mongodb(doc)
+            self.load_to_mongodb(doc, id_column=id_column)
         else:
             doc = self._recursive_json_fix(doc)
-            self.db = np.append(self.db, doc)
+            # Check if already present and if so update, otherwise add as new
+            name = doc.get(id_column, '')
+            orig_doc = self.query({id_column: name})
+            if len(orig_doc) > 0 and orig_doc[0][id_column] == name:
+                ind = np.where(self.db == orig_doc[0])
+                self.db[ind] = doc
+            else:
+                self.db = np.append(self.db, doc)
 
     def load_to_mongodb(self, doc, id_column='name'):
         # Load JSON file to MongoDB
@@ -165,7 +182,7 @@ class Database(object):
                 out_doc[key] = val
         return out_doc
 
-    def save_from_db(self, doc, verbose=False, out_dir='', save=False, name=''):
+    def save_from_db(self, doc, verbose=False, out_dir='', save=True, name=''):
         """
         Save a JSON representation of the document. Useful for exporting database contents.
 
@@ -178,7 +195,7 @@ class Database(object):
         out_dir : str
             Directory to save JSON file (Default: '')
         save : bool
-            Flag to indicate if the JSON represenation should be saved
+            Flag to indicate if the JSON representation should be saved (Default: True)
         name : str
             Name of output JSON file. If none is provided, the 'name' field is used to name it. (Default: '')
         """
@@ -194,9 +211,73 @@ class Database(object):
                 name = name.strip().replace(' ', '_') + '.json'
             filename = os.path.join(out_dir, name)
             print(filename)
-            with open(os.path.join(out_dir, filename), 'w') as f:
+            with open(filename, 'w') as f:
                 f.write(out_json)
         return
+
+    def save_all(self, out_dir=''):
+        # Save entire database to disk
+        doc_list = self.query({})
+        for doc in doc_list:
+            self.save_from_db(doc, out_dir=out_dir, save=True)
+
+    def add_data(self, filename, force=False, id_column='name', auto_save=False, save_dir='data'):
+        """
+        Add JSON data to database. May need to use save_all() afterwards to explicitly save changes to disk.
+
+        Parameters
+        ----------
+        filename : str
+            File name of JSON data to load
+        force : bool
+            Flag to ignore validation (Default: False)
+        id_column : str
+            Field to use when matching names (Default: 'name')
+        auto_save : bool
+            Flag to trigger automatically saving (Default: False)
+        save_dir : str
+            Directory to use if auto-saving (Default: 'data')
+        """
+
+        with open(filename, 'r') as f:
+            new_data = json.load(f)
+
+        # Run validation
+        # TODO: implement this
+
+        name = new_data.get(id_column)
+        if name is None:
+            raise RuntimeError('JSON data is missing name information for field: {}'.format(id_column))
+
+        # Get existing data that will be updated
+        old_doc = self.query({id_column: name})[0]
+        if len(old_doc) == 0:
+            print('{} does not exist in the database! Use load_file_to_db() to load new objects.'.format(name))
+            return
+
+        # Loop through the new data, adding it all to old_doc
+        for k, v in new_data.items():
+            if k == id_column: continue
+
+            old_values = old_doc.get(k)
+            if old_values is None:
+                old_doc[k] = [v]
+            else:
+                old_doc[k] = np.append(old_doc[k], [v])
+
+        # Replace document in the database
+        if self.use_mongodb:
+            self.load_to_mongodb(old_doc)
+        else:
+            orig_doc = self.query({id_column: name})[0]
+            ind = np.where(self.db == orig_doc)
+            self.db[ind] = old_doc
+
+        if not auto_save:
+            print('Data for {} has been updated. Consider running save_all() to update JSON on disk.'.format(name))
+        if auto_save:
+            print('Auto-saving to {}'.format(save_dir))
+            self.save_from_db(old_doc, out_dir=save_dir)
 
     def query(self, query, embed_ref=False, ref_id_column='key'):
         """
@@ -296,11 +377,12 @@ class Database(object):
         # Manually execute query to in-memory database
         out_result = self.db
         for key, value in query.items():
-            # Use things like dec.value to query [value] for each element in [dec]
+            # Use strings like dec.value to query [value] for each element in [dec]
             key_list = key.split('.')
             if not key_list[0].startswith('$'):
                 out_result = self._sub_query(out_result, key_list[0])
-                if len(out_result) > 1:
+                if len(out_result) >= 1:
+                    # important to be >= 1 otherwise it just behaves like an $exist
                     out_result = self._sub_query(out_result, key_list, value)
             else:
                 out_result = self._sub_query(out_result, key_list, value)
@@ -413,7 +495,7 @@ class Database(object):
                             # If selection listed a key, use the reference information there
                             ind = np.array([x['reference'] for x in val]) == selection[key]
                         else:
-                            ind = np.array([x['best'] for x in val]) == 1
+                            ind = np.array([x.get('best', 0) for x in val]) == 1
                         unit = val[ind][0].get('unit')
                         temp_val = val[ind][0]['value']
                         out_row[key] = self._store_quantity(temp_val, unit)

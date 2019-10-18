@@ -26,7 +26,7 @@ print(json.dumps(doc, indent=4, sort_keys=False))
 
 # Example to save JSON data to file
 doc = db.query({'name': 'And XXX'})[0]
-db.save_from_db(doc, verbose=True)
+db.save_from_db(doc, verbose=True, save=False)
 db.save_from_db(doc, save=True)
 
 # Example query with operators ($)
@@ -73,8 +73,16 @@ db.table(query=query, selection={'ra': 'FakeRef2019'})[['name', 'ra', 'dec']]
 db.query_reference({'id': 1})
 db.query_reference({'key': 'Bellazzini_2006_1'})[0]
 
-# TODO: Add entry to existing field
-# TODO: Update entry
+# Update entries with new data from JSON file
+db.load_file_to_db('data/And_XXX.json')  # reset (in case using MongoDB or if I run add_data more than once)
+db.query({'name': 'And XXX'})[0]['ra']
+db.query({'name': 'And XXX'})[0]['ebv']
+db.add_data('new_data.json')
+db.table(query={'name': 'And XXX'}, selection={'ebv': 'Penguin_2020_1'})[['name','ra','ebv']]
+db.save_all(out_dir='data')
+
+# To add and save at the same time (not really recommended, but included for completeness):
+db.add_data('new_data.json', save_dir='data', auto_save=True)
 
 # Using mongodb
 # If localhost you must be running a local mongodb server
@@ -88,4 +96,4 @@ db = Database(conn_string='localhost', mongo_db_name='GalaxyCat', collection_nam
 
 # All queries from above (should) work the same in MongoDB
 doc = db.query({'name': 'And XXX'})[0]
-db.save_from_db(doc, verbose=True)
+db.save_from_db(doc, verbose=True, save=False)

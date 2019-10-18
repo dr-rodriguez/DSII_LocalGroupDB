@@ -68,6 +68,9 @@ class Validator(object):
                     msg = 'ERROR: {} has missing references: {}'.format(k, elem)
                     print(msg)
                     return False
+                if elem.get('unit'):
+                    # If unit is present, check that it's valid
+                    unit_check = self.check_unit(elem)
 
         return True
 
@@ -77,6 +80,10 @@ class Validator(object):
             return False
         else:
             return True
+
+    def check_unit(self, elem):
+        # Check that unit is recognized by astropy.units (or is empty)
+        return True
 
     def check_dates(self):
         pass
