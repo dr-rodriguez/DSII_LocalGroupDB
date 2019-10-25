@@ -221,7 +221,8 @@ class Database(object):
         for doc in doc_list:
             self.save_from_db(doc, out_dir=out_dir, save=True)
 
-    def add_data(self, filename, force=False, id_column='name', auto_save=False, save_dir='data', update_value=False):
+    def add_data(self, filename, force=False, id_column='name', auto_save=False, save_dir='data', update_value=False,
+                 validate=True):
         """
         Add JSON data to database. May need to use save_all() afterwards to explicitly save changes to disk.
 
@@ -239,13 +240,20 @@ class Database(object):
             Directory to use if auto-saving (Default: 'data')
         update_value : bool
             Flag to indicate whether or not to update values from duplicated references (Default: False)
+        validate : bool
+            Flag to run JSON validation (Default: True)
         """
 
         with open(filename, 'r') as f:
             new_data = json.load(f)
 
         # Run validation
-        # TODO: implement this
+        if validate:
+            from .validator import Validator
+            v = Validator(filename, database=self, is_data=True)
+            if not v.run():
+                print('{} does not pass JSON validation'.format(filename))
+                return
 
         name = new_data.get(id_column)
         if name is None:
@@ -377,7 +385,7 @@ class Database(object):
                 key_list = key.split('.')
                 if not key_list[0].startswith('$'):
                     result = self._sub_query(result, key_list[0])
-                    if len(result) > 1:
+                    if len(result) >= 1:
                         result = self._sub_query(result, key_list, value)
                 else:
                     result = self._sub_query(result, key_list, value)
@@ -468,7 +476,8 @@ class Database(object):
 
         return out_result
 
-    def _store_quantity(self, val, unit):
+    @staticmethod
+    def _store_quantity(val, unit):
         # Method to convert a value to a Quantity, if a unit is provided
         if unit:
             try:

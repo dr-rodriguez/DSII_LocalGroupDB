@@ -86,6 +86,10 @@ db.save_all(out_dir='data')  # explicitly save my changes to disk
 # To add and save at the same time (not really recommended, but included for completeness):
 db.add_data('new_data.json', save_dir='data', auto_save=True)
 
+# Data validation
+from galcat.validator import Validator
+Validator('new_data.json', database=db, is_data=True, ref_check=True).run()
+
 # Using mongodb
 # If localhost you must be running a local mongodb server
 from galcat.core import *
