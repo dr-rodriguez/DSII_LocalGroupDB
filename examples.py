@@ -74,14 +74,14 @@ db.query_reference({'id': 1})
 db.query_reference({'key': 'Bellazzini_2006_1'})[0]
 
 # Update entries with new data from JSON file
-db.load_file_to_db('data/And_XXX.json')  # reset (in case using MongoDB or if I run add_data more than once)
+db.load_file_to_db('data/And_XXX.json')  # reset (in case using MongoDB or to undo add data)
 db.query({'name': 'And XXX'})[0]
 db.query({'name': 'And XXX'})[0]['ra']
 db.query({'name': 'And XXX'})[0]['ebv']
-db.add_data('new_data.json')
+db.add_data('new_data.json', update_value=False)  # set update_value to True to overwrite entries
 db.query({'name': 'And XXX'})[0]['fake_quantity']
 db.table(query={'name': 'And XXX'}, selection={'ebv': 'Penguin_2020_1'})[['name','ra','ebv']]
-db.save_all(out_dir='data')
+db.save_all(out_dir='data')  # explicitly save my changes to disk
 
 # To add and save at the same time (not really recommended, but included for completeness):
 db.add_data('new_data.json', save_dir='data', auto_save=True)

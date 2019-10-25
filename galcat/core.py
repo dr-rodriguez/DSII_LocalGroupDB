@@ -221,7 +221,7 @@ class Database(object):
         for doc in doc_list:
             self.save_from_db(doc, out_dir=out_dir, save=True)
 
-    def add_data(self, filename, force=False, id_column='name', auto_save=False, save_dir='data'):
+    def add_data(self, filename, force=False, id_column='name', auto_save=False, save_dir='data', update_value=False):
         """
         Add JSON data to database. May need to use save_all() afterwards to explicitly save changes to disk.
 
@@ -237,6 +237,8 @@ class Database(object):
             Flag to trigger automatically saving (Default: False)
         save_dir : str
             Directory to use if auto-saving (Default: 'data')
+        update_value : bool
+            Flag to indicate whether or not to update values from duplicated references (Default: False)
         """
 
         with open(filename, 'r') as f:
@@ -257,13 +259,30 @@ class Database(object):
 
         # Loop through the new data, adding it all to old_doc
         for k, v in new_data.items():
-            if k == id_column: continue
+            if k == id_column:
+                continue
 
             old_values = old_doc.get(k)
             if old_values is None:
                 old_doc[k] = np.array(v)
             else:
-                old_doc[k] = np.append(old_doc[k], [v])
+                ref_list = [x['reference'] for x in old_doc[k]]
+                # Loop over all new entries to be inserted, checking references at each stage
+                for i in range(len(v)):
+                    ref = v[i]['reference']
+
+                    if ref in ref_list:
+                        ind = np.where(np.array(ref_list) == ref)
+                        print('Duplicate reference for {} found: {}. Values: {}'.format(k, ref, old_doc[k][ind]))
+                        if update_value:
+                            print('Updating with new value: {}'.format(v[i]))
+                            old_doc[k][ind] = v[i]
+                        else:
+                            print('Skipping insert for {} from {}'.format(k, ref))
+
+                        continue  # skips appending the entry for this particular reference
+
+                    old_doc[k] = np.append(old_doc[k], [v[i]])
 
         # Replace document in the database
         if self.use_mongodb:
