@@ -63,14 +63,17 @@ class Database(object):
 
         Parameters
         ----------
-        filename : str
-            Name of JSON file to add
+        filename : str or dict-like
+            Name of JSON file to add. If a dict-like, it is treated as ready to load.
         id_column : str
             Name of field to use for matching (Default: 'name')
         """
 
-        with open(filename, 'r') as f:
-            doc = json.load(f)
+        if isinstance(filename, str):
+            with open(filename, 'r') as f:
+                doc = json.load(f)
+        else:
+            doc = filename
 
         if self.use_mongodb:
             self.load_to_mongodb(doc, id_column=id_column)
@@ -78,7 +81,7 @@ class Database(object):
             doc = self._recursive_json_fix(doc)
             # Check if already present and if so update, otherwise add as new
             name = doc.get(id_column, '')
-            orig_doc = self.query({id_column: name})
+            orig_doc = self.query_db({id_column: name})
             if len(orig_doc) > 0 and orig_doc[0][id_column] == name:
                 ind = np.where(self.db == orig_doc[0])
                 self.db[ind] = doc
@@ -217,7 +220,7 @@ class Database(object):
 
     def save_all(self, out_dir=''):
         # Save entire database to disk
-        doc_list = self.query({})
+        doc_list = self.query_db({})
         for doc in doc_list:
             self.save_from_db(doc, out_dir=out_dir, save=True)
 
@@ -228,8 +231,8 @@ class Database(object):
 
         Parameters
         ----------
-        filename : str
-            File name of JSON data to load
+        filename : str or dict-like
+            File name of JSON data to load. Alternatively, it can be the dict-like data you want to load.
         force : bool
             Flag to ignore validation (Default: False)
         id_column : str
@@ -244,13 +247,16 @@ class Database(object):
             Flag to run JSON validation (Default: True)
         """
 
-        with open(filename, 'r') as f:
-            new_data = json.load(f)
+        if isinstance(filename, str):
+            with open(filename, 'r') as f:
+                new_data = json.load(f)
+        else:
+            new_data = filename
 
         # Run validation
         if validate:
             from .validator import Validator
-            v = Validator(filename, database=self, is_data=True)
+            v = Validator(database=self, db_object=new_data, is_data=True)
             if not v.run():
                 print('{} does not pass JSON validation'.format(filename))
                 return
@@ -260,7 +266,7 @@ class Database(object):
             raise RuntimeError('JSON data is missing name information for field: {}'.format(id_column))
 
         # Get existing data that will be updated
-        old_doc = self.query({id_column: name})[0]
+        old_doc = self.query_db({id_column: name})[0]
         if len(old_doc) == 0:
             print('{} does not exist in the database! Use load_file_to_db() to load new objects.'.format(name))
             return
@@ -296,7 +302,7 @@ class Database(object):
         if self.use_mongodb:
             self.load_to_mongodb(old_doc)
         else:
-            orig_doc = self.query({id_column: name})[0]
+            orig_doc = self.query_db({id_column: name})[0]
             ind = np.where(self.db == orig_doc)
             self.db[ind] = old_doc
 
@@ -306,7 +312,7 @@ class Database(object):
             print('Auto-saving to {}'.format(save_dir))
             self.save_from_db(old_doc, out_dir=save_dir)
 
-    def query(self, query, embed_ref=False, ref_id_column='key'):
+    def query_db(self, query, embed_ref=False, ref_id_column='key'):
         """
         Perform a database query with MongoDB's query language.
         Examples:
@@ -355,6 +361,9 @@ class Database(object):
                                 doc[key][i]['reference'] = ref[0]
 
         return result
+
+    def query(self, *args, **kwargs):
+        return self.query_db(*args, **kwargs)
 
     def query_reference(self, query):
         """
@@ -488,7 +497,7 @@ class Database(object):
 
         return val
 
-    def table(self, query={}, selection={}):
+    def query_table(self, query={}, selection={}):
         """
         Get a formatted table of all query results. When multiple results are present for a single value, the best one
         is picked unless the user specifies a selection. This functionality will be revisited in the future.
@@ -507,7 +516,7 @@ class Database(object):
             Astropy QTable of results
         """
 
-        results = self.query(query=query)
+        results = self.query_db(query=query)
 
         # For each entry in result, select best field.value or what the user has specified
         tab_data = []
@@ -539,3 +548,6 @@ class Database(object):
         df = QTable.from_pandas(temp)
 
         return df
+
+    def table(self, *args, **kwargs):
+        return self.query_table(*args, **kwargs)

@@ -2,7 +2,7 @@
     "name": "Gal 2",
     "ra": [
         {
-            "value": 9.14542,
+            "value": 10.4,
             "best": 1,
             "reference": "",
             "unit": "deg"
@@ -10,7 +10,7 @@
     ],
     "dec": [
         {
-            "value": 49.64667,
+            "value": -32.4,
             "best": 1,
             "reference": "",
             "unit": "deg"
@@ -18,16 +18,16 @@
     ],
     "ebv": [
         {
-            "value": 0.166,
+            "value": 0.2,
             "best": 1,
             "reference": "Bellazzini_2006_1"
         }
     ],
     "v_mag": [
         {
-            "value": 16.2,
-            "error_upper": 0.3,
-            "error_lower": 0.3,
+            "value": 20.2,
+            "error_upper": 0.5,
+            "error_lower": 0.5,
             "best": 1,
             "unit": "mag",
             "reference": ""

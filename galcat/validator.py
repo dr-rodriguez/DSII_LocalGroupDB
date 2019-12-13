@@ -45,7 +45,7 @@ class Validator(object):
     def run(self):
         # Run checks
         if self.run_full_db:
-            for doc in self.db.query({}):
+            for doc in self.db.query_db({}):
                 self.doc = doc
                 self.run_one()
         else:
@@ -76,7 +76,7 @@ class Validator(object):
 
     def check_exists(self, name):
         """Checks that the provided name exists in the database."""
-        doc_list = self.db.query({self.id_column: name})
+        doc_list = self.db.query_db({self.id_column: name})
         if len(doc_list) > 0:
             return True
         else:
