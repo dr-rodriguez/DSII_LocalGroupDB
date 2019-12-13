@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 from astropy.table import QTable
 from astropy.units import Quantity
 
@@ -349,6 +350,7 @@ class Database(object):
 
         # Embed the reference dict in place of the key
         if embed_ref:
+            result = deepcopy(result)
             for doc in result:
                 for key, value in doc.items():
                     if not isinstance(value, (list, np.ndarray)):

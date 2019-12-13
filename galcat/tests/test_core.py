@@ -30,6 +30,12 @@ def test_query_db():
     doc = db.query_db({'fake_column': 5})
     assert len(doc) == 0
 
+    doc = db.query({'name': 'Gal 1'}, embed_ref=True)
+    assert doc[0]['ebv'][0]['reference']['bibcode'] == '2006MNRAS.366..865B'
+
+    doc = db.query({'name': 'Gal 1'}, embed_ref=False)
+    assert doc[0]['ebv'][0]['reference'] == 'Bellazzini_2006_1'
+
     # EBV has no error_upper. Fails locally but not on MongoDB
     docs = db.query_db({'ebv.error_upper': 0.5})
     assert len(docs) == 0
