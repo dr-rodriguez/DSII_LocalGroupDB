@@ -1,0 +1,61 @@
+{
+    "name": "Gal 1",
+    "ra": [
+        {
+            "value": 9.14542,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        },
+        {
+            "value": 999.14542,
+            "best": 0,
+            "reference": "FakeRef2019",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 49.64667,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.166,
+            "best": 1,
+            "reference": "Bellazzini_2006_1"
+        }
+    ],
+    "radial_velocity": [
+        {
+            "value": -139.8,
+            "error_upper": 6.0,
+            "error_lower": 6.6,
+            "best": 1,
+            "reference": ""
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 16.2,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ],
+    "half-light_radius": [
+        {
+            "value": 1.35,
+            "error_upper": 0.12,
+            "error_lower": 0.18,
+            "best": 1,
+            "unit": "arcmin",
+            "reference": ""
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "name": "Gal 2",
+    "ra": [
+        {
+            "value": 9.14542,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "dec": [
+        {
+            "value": 49.64667,
+            "best": 1,
+            "reference": "",
+            "unit": "deg"
+        }
+    ],
+    "ebv": [
+        {
+            "value": 0.166,
+            "best": 1,
+            "reference": "Bellazzini_2006_1"
+        }
+    ],
+    "v_mag": [
+        {
+            "value": 16.2,
+            "error_upper": 0.3,
+            "error_lower": 0.3,
+            "best": 1,
+            "unit": "mag",
+            "reference": ""
+        }
+    ]
+}

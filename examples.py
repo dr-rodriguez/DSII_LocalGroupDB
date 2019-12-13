@@ -87,8 +87,18 @@ db.save_all(out_dir='data')  # explicitly save my changes to disk
 db.add_data('new_data.json', save_dir='data', auto_save=True)
 
 # Data validation
+from galcat.core import *
+db = Database(directory='test_data')
 from galcat.validator import Validator
-Validator('new_data.json', database=db, is_data=True, ref_check=True).run()
+Validator(database=db, is_data=True, ref_check=True, verbose=True).run()  # against full db
+Validator(database=db, db_object='new_data.json', is_data=True, ref_check=True).run() # run against JSON file
+
+doc = {"name": "Gal 3",
+       "ra": [{"value": 9.14542, "best": 1, "reference": "", "unit": "deg"}],
+       "dec": [{"value": 49.64667, "best": 1, "reference": "", "unit": "deg"}],
+       "ebv": [{"value": 0.166, "best": 1, "reference": "Bellazzini_2006_1"}]}
+Validator(database=db, db_object=doc, is_data=True, ref_check=True).run()  # against dict-like doc
+
 
 # Using mongodb
 # If localhost you must be running a local mongodb server

@@ -5,36 +5,57 @@ from astropy.units import Quantity
 
 
 class Validator(object):
-    def __init__(self, filename, database, is_data=True, id_column='name', ref_check=True):
+    def __init__(self, database, db_object=None, is_data=True, id_column='name', ref_check=True, verbose=False):
         """
         Validator object to check that JSON passes all criteria for ingesting into main database.
 
         Parameters
         ----------
-        filename : str
-            JSON file to load into the database
         database : galcat.core.Database
             Database object, used to validate values and references
+        db_object : None, str, dict-like
+            Object to validate. If None (default), will work against full database.
+            If string, will treat as JSON file input.
         is_data : bool
             Flag to indicate this is data contents as opposed to reference content (Default: True)
         id_column : str
             Field to use when matching names (Default: 'name')
         ref_check : bool
             Flag to indicate if references should be validated
+        verbose : bool
+            Flag to control verbosity
         """
 
-        with open(filename, 'r') as f:
-            self.doc = json.load(f)
+        self.run_full_db = False
+
+        if db_object is None:
+            self.run_full_db = True
+        elif db_object is not None and isinstance(db_object, str):
+            with open(db_object, 'r') as f:
+                self.doc = json.load(f)
+        elif db_object is not None:
+            self.doc = db_object
 
         self.id_column = id_column
         self.is_data = is_data
         self.db = database
         self.ref_check = ref_check
+        self.verbose = verbose
 
     def run(self):
         # Run checks
+        if self.run_full_db:
+            for doc in self.db.query({}):
+                self.doc = doc
+                self.run_one()
+        else:
+            self.run_one()
+        print('Validation complete.')
+
+    def run_one(self):
         if self.is_data:
             name = self.check_name()
+            if self.verbose: print('Checking {}'.format(name))
             exist_check = self.check_exists(name)
             val_check = self.check_values()
 
@@ -67,6 +88,8 @@ class Validator(object):
         """Check that all fields in document contain value or distribution fields.
         Also checks references for each field.
         """
+        result = [True]
+
         for k, v in self.doc.items():
             # Skip the name field
             if k == self.id_column:
@@ -76,18 +99,18 @@ class Validator(object):
             for elem in v:
                 if elem.get('value') is None and elem.get('distribution') is None:
                     print('ERROR: {} has missing values/distribution: {}'.format(k, elem))
-                    return False
-                if not self.check_references(elem):
+                    result.append(False)
+                if self.ref_check and not self.check_references(elem):
                     print('ERROR: {} has missing references or it does not exist: {}'.format(k, elem))
-                    return False
+                    result.append(False)
                 if elem.get('unit'):
                     # If unit is present, check that it's valid
                     unit_check = self.check_unit(elem)
                     if not unit_check:
                         print('ERROR: {} has invalid units: {}'.format(k, elem.get('unit')))
-                        return False
+                        result.append(False)
 
-        return True
+        return all(result)
 
     def check_references(self, elem, id_column='key'):
         """Check that references are provided and that they already exist in the database"""
@@ -99,7 +122,7 @@ class Validator(object):
             if self.ref_check:
                 if len(db_ref) == 0:
                     return False
-                if db_ref.get(id_column) != ref:
+                if db_ref[0].get(id_column) != ref:
                     return False
             return True
 
