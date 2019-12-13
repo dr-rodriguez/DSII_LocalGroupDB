@@ -449,13 +449,13 @@ class Database(object):
                         else:
                             db_operator, sub_value = list(value.items())[0]
                         if db_operator == '$gt':
-                            temp_list = list(filter(lambda y: y[key[1]] > sub_value, elem[key[0]]))
+                            temp_list = list(filter(lambda y: y.get(key[1]) > sub_value, elem[key[0]]))
                         elif db_operator == '$gte':
-                            temp_list = list(filter(lambda y: y[key[1]] >= sub_value, elem[key[0]]))
+                            temp_list = list(filter(lambda y: y.get(key[1]) >= sub_value, elem[key[0]]))
                         elif db_operator == '$lt':
-                            temp_list = list(filter(lambda y: y[key[1]] < sub_value, elem[key[0]]))
+                            temp_list = list(filter(lambda y: y.get(key[1]) < sub_value, elem[key[0]]))
                         elif db_operator == '$lte':
-                            temp_list = list(filter(lambda y: y[key[1]] <= sub_value, elem[key[0]]))
+                            temp_list = list(filter(lambda y: y.get(key[1]) <= sub_value, elem[key[0]]))
                         elif db_operator == '$exists':
                             if sub_value:
                                 temp_list = list(filter(lambda y: key[1] in y, elem[key[0]]))
@@ -475,7 +475,7 @@ class Database(object):
                         else:
                             raise RuntimeError('ERROR: {} not yet supported'.format(db_operator))
                     else:
-                        temp_list = list(filter(lambda y: y[key[1]] == value, elem[key[0]]))
+                        temp_list = list(filter(lambda y: y.get(key[1]) == value, elem[key[0]]))
                     if len(temp_list) > 0:
                         ind_list.append(i)
                 out_result = doc_list[ind_list]

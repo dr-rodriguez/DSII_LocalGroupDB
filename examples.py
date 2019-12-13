@@ -92,7 +92,7 @@ db.add_data('new_data.json', save_dir='data', auto_save=True)
 
 # Data validation
 from galcat.core import *
-db = Database(directory='test_data')
+db = Database(directory='galcat/tests/test_data')
 from galcat.validator import Validator
 Validator(database=db, is_data=True, ref_check=True, verbose=True).run()  # against full db
 Validator(database=db, db_object='new_data.json', is_data=True, ref_check=True).run() # run against JSON file
