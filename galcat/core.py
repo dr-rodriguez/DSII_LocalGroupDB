@@ -459,10 +459,12 @@ class Database(object):
                         elif db_operator == '$lte':
                             temp_list = list(filter(lambda y: y.get(key[1]) <= sub_value, elem[key[0]]))
                         elif db_operator == '$exists':
-                            if sub_value:
-                                temp_list = list(filter(lambda y: key[1] in y, elem[key[0]]))
-                            else:
-                                temp_list = list(filter(lambda y: key[1] not in y, elem[key[0]]))
+                            raise RuntimeError('Use of $exists has been rolled back and '
+                                               'only works with the MongoDB implementation.')
+                            # if sub_value:
+                            #     temp_list = list(filter(lambda y: key[1] in y, elem[key[0]]))
+                            # else:
+                            #     temp_list = list(filter(lambda y: key[1] not in y, elem[key[0]]))
                         elif db_operator == '$or':
                             # Special logic for $or (run each sub_query in the or list against the current element)
                             temp_list = []

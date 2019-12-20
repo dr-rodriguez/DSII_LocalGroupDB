@@ -36,7 +36,6 @@ def test_query_db():
     doc = db.query({'name': 'Gal 1'}, embed_ref=False)
     assert doc[0]['ebv'][0]['reference'] == 'Bellazzini_2006_1'
 
-    # EBV has no error_upper. Fails locally but not on MongoDB
     docs = db.query_db({'ebv.error_upper': 0.5})
     assert len(docs) == 0
 
@@ -72,23 +71,28 @@ def test_operator_math():
 
 
 def test_operator_exists():
-    query = {'radial_velocity.value': {'$exists': True}}
-    docs = db.query_db(query)
-    assert len(docs) == 1
-    assert docs[0]['name'] == 'Gal 1'
+    if USE_MONGO:
+        query = {'radial_velocity.value': {'$exists': True}}
+        docs = db.query_db(query)
+        assert len(docs) == 1
+        assert docs[0]['name'] == 'Gal 1'
 
-    # This fails locally, but not in MongoDB
-    query = {'radial_velocity': {'$exists': True}}
-    docs = db.query_db(query)
-    assert len(docs) == 1
-    assert docs[0]['name'] == 'Gal 1'
+        # This fails locally, but not in MongoDB
+        query = {'radial_velocity': {'$exists': True}}
+        docs = db.query_db(query)
+        assert len(docs) == 1
+        assert docs[0]['name'] == 'Gal 1'
 
-    # This fails locally, but not in MongoDB
-    query = {'radial_velocity.value': {'$exists': False}}
-    docs = db.query_db(query)
-    print(docs)
-    assert len(docs) == 1
-    assert docs[0]['name'] == 'Gal 2'
+        # This fails locally, but not in MongoDB
+        query = {'radial_velocity.value': {'$exists': False}}
+        docs = db.query_db(query)
+        print(docs)
+        assert len(docs) == 1
+        assert docs[0]['name'] == 'Gal 2'
+    else:
+        with pytest.raises(RuntimeError):
+            query = {'radial_velocity.value': {'$exists': True}}
+            docs = db.query_db(query)
 
 
 def test_operator_or():
