@@ -1,6 +1,7 @@
 # Unit tests for core.py
 import pytest
 import astropy.units as u
+from astropy.table import QTable
 from galcat.core import *
 
 USE_MONGO = False
@@ -36,6 +37,7 @@ def test_query_db():
     doc = db.query({'name': 'Gal 1'}, embed_ref=False)
     assert doc[0]['ebv'][0]['reference'] == 'Bellazzini_2006_1'
 
+    # EBV has no error_upper so this should return nothing
     docs = db.query_db({'ebv.error_upper': 0.5})
     assert len(docs) == 0
 
@@ -127,6 +129,7 @@ def test_query_table():
     df = db.query_table({'name': 'Gal 1'})
     assert df[['ra']][0][0].value == 9.14542
     assert df[['ra']][0][0].unit == u.deg
+    assert isinstance(df, QTable)
 
     df = db.query_table({'name': 'Gal 1'}, selection={'ra': 'FakeRef2019'})
     assert df[['ra']][0][0].value == 999.14542
@@ -147,3 +150,48 @@ def test_load_file_to_db():
     if USE_MONGO:
         db.db.delete_one({'name': 'Gal 3'})
 
+
+@pytest.mark.parametrize('test_input, result', [
+    ((5, u.kg), 5*u.kg),
+    ((5, 'penguin'), 5),
+])
+def test_store_quantity(test_input, result):
+    assert db._store_quantity(*test_input) == result
+
+
+def test_add_data():
+    # reset DB values
+    db.load_file_to_db('test_data/Gal_1.json')
+
+    docs = db.query_db({'name': 'Gal 1', 'fake_quantity.value': 1})
+    assert len(docs) == 0
+
+    # Missing name should through a RuntimeError
+    with pytest.raises(RuntimeError):
+        doc = {'fake_quantity': [{'value': 1}]}
+        db.add_data(doc, update_value=False, validate=False)
+
+    doc = {'name': 'Gal 1',
+           'fake_quantity': [{'value': 1}]}
+    db.add_data(doc, update_value=False, validate=False)
+
+    # Confirm value got loaded
+    docs = db.query_db({'name': 'Gal 1', 'fake_quantity.value': 1})
+    assert len(docs) == 1
+
+    # reset DB values
+    db.load_file_to_db('test_data/Gal_1.json')
+
+
+def test_save_from_db(tmpdir):
+    doc = db.query_db({'name': 'Gal 1'})[0]
+    db.save_from_db(doc, out_dir=tmpdir)
+    assert os.path.isfile(os.path.join(tmpdir, 'Gal_1.json'))
+
+
+def test_recursive_json_fix():
+    assert True
+
+
+def test_recursive_json_reverse_fix():
+    assert True
