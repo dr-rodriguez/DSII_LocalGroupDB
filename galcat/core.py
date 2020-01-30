@@ -558,11 +558,19 @@ class Database(object):
                         else:
                             ind = np.array([x.get('best', 0) for x in val]) == 1
                         unit = val[ind][0].get('unit')
-                        temp_val = val[ind][0]['value']
+                        if val[ind][0].get('distribution') is not None:
+                            temp_dic = get_values_from_distribution(val[ind][0].get('distribution'))
+                            temp_val = temp_dic['value']
+                        else:
+                            temp_val = val[ind][0]['value']
                         out_row[key] = self._store_quantity(temp_val, unit)
                     else:
                         unit = val[0].get('unit')
-                        temp_val = val[0]['value']
+                        if val[0].get('distribution') is not None:
+                            temp_dic = get_values_from_distribution(val[0].get('distribution'))
+                            temp_val = temp_dic['value']
+                        else:
+                            temp_val = val[0]['value']
                         out_row[key] = self._store_quantity(temp_val, unit)
 
             tab_data.append(out_row)

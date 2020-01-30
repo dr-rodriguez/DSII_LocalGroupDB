@@ -230,3 +230,19 @@ def test_get_values_from_distribution():
 
     result = get_values_from_distribution(n_distr, unit='kpc')
     assert 'kpc' == result['unit']
+
+
+def test_distribution():
+    # TODO: Fix this, currently fails in recursive_json_fix since its a pure list
+    doc = {'name': 'Gal 9',
+           'ebv': [{'distribution': [1.20881063, 0.93766121, 1.20136033, 1.11122468, 0.88140548,
+           0.98529047, 0.83750181, 0.95603778, 0.90262727, 0.76719971,
+           0.96954131, 0.83957612, 1.05208742, 0.9203976 , 0.5388856 ,
+           0.82028187, 0.99002746, 0.99821842, 1.08264829, 0.88236597,
+           1.07393172, 0.68800062, 0.95087714, 0.95349601, 1.20331926,
+           1.1427941 , 1.13346843, 1.12862014, 1.32770298], 'reference': 'Fake'}]}
+    db.load_file_to_db(doc)
+
+    df = db.query_table({'name': 'Gal 9'})
+    print(df)
+    assert False
