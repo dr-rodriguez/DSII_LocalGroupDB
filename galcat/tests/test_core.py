@@ -1,6 +1,7 @@
 # Unit tests for core.py
 import pytest
 import astropy.units as u
+from astropy import uncertainty as unc
 from astropy.table import QTable
 from galcat.core import *
 
@@ -11,10 +12,10 @@ def setup_module(module):
     if USE_MONGO:
         # MongoDB version
         module.db = Database(conn_string='localhost', mongo_db_name='GalaxyCat',
-                             collection_name='galaxies_test', references_file='test_references.json')
+                             collection_name='galaxies_test', references_file='galcat/tests/test_references.json')
     else:
         # Local version
-        module.db = Database(directory='test_data', references_file='test_references.json')
+        module.db = Database(directory='galcat/tests/test_data', references_file='galcat/tests/test_references.json')
 
 
 def test_load_database():
@@ -161,7 +162,7 @@ def test_store_quantity(test_input, result):
 
 def test_add_data():
     # reset DB values
-    db.load_file_to_db('test_data/Gal_1.json')
+    db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
 
     docs = db.query_db({'name': 'Gal 1', 'fake_quantity.value': 1})
     assert len(docs) == 0
@@ -180,7 +181,7 @@ def test_add_data():
     assert len(docs) == 1
 
     # reset DB values
-    db.load_file_to_db('test_data/Gal_1.json')
+    db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
 
 
 def test_save_from_db(tmpdir):
@@ -190,8 +191,42 @@ def test_save_from_db(tmpdir):
 
 
 def test_recursive_json_fix():
-    assert True
+    doc = {"name": "Gal 3",
+           "ebv": [{"value": 0.2, "best": 1, "reference": "Bellazzini_2006_1"},
+                   {"value": 0.4, "best": 0},
+                   {"value": 0.6, "best": 0, "list": [{'a': 1}, {'a': 2}, {'a': 3}]}]}
+    newdoc = db._recursive_json_fix(doc)
+    assert isinstance(newdoc['ebv'], np.ndarray)
+    assert isinstance(newdoc['ebv'][2]['list'], np.ndarray)
+    assert len(newdoc['ebv']) == 3
 
 
 def test_recursive_json_reverse_fix():
-    assert True
+    doc = {"name": "Gal 3",
+           "ebv": np.array([{"value": 0.2, "best": 1, "reference": "Bellazzini_2006_1"},
+                           {"value": 0.4, "best": 0},
+                           {"value": 0.6, "best": 0, "list": np.array([{'a': 1}, {'a': 2}, {'a': 3}])}])}
+    newdoc = db._recursive_json_reverse_fix(doc)
+    assert isinstance(newdoc['ebv'], list)
+    assert isinstance(newdoc['ebv'][2]['list'], list)
+    assert len(newdoc['ebv']) == 3
+
+
+def test_get_values_from_distribution():
+    center, std = 1, 0.2
+    np.random.seed(12345)
+    n_distr = unc.normal(center * u.kpc, std=std * u.kpc, n_samples=100)
+    result = get_values_from_distribution(n_distr)
+    assert center == pytest.approx(result['value'], abs=1e-2)
+    assert std == pytest.approx(result['error'], abs=1e-2)
+    assert 'kpc' == result['unit']
+
+    np.random.seed(12345)
+    n_distr = unc.normal(center, std=std, n_samples=100)
+    result = get_values_from_distribution(n_distr)
+    assert center == pytest.approx(result['value'], abs=1e-2)
+    assert std == pytest.approx(result['error'], abs=1e-2)
+    assert result.get('unit', None) is None
+
+    result = get_values_from_distribution(n_distr, unit='kpc')
+    assert 'kpc' == result['unit']

@@ -4,8 +4,28 @@ import json
 import numpy as np
 import pandas as pd
 from copy import deepcopy
+from astropy import units as u
 from astropy.table import QTable
 from astropy.units import Quantity
+from astropy import uncertainty as unc
+
+
+def get_values_from_distribution(distribution, unit=None):
+    """Assuming a normal distribution, return value+error; includes unit if provided"""
+
+    val = distribution.pdf_mean
+    err = distribution.pdf_std
+
+    if isinstance(val, u.quantity.Quantity):
+        unit = val.unit.to_string()
+        val = val.value
+        err = err.value
+
+    out_dict = {'value': val, 'error': err}
+    if unit is not None:
+        out_dict['unit'] = unit
+
+    return out_dict
 
 
 class Database(object):
@@ -175,11 +195,11 @@ class Database(object):
 
         for key, val in doc.items():
             if isinstance(val, dict):
-                out_doc[key] = self._recursive_json_fix(val)
+                out_doc[key] = self._recursive_json_reverse_fix(val)
             elif isinstance(val, type(np.array([]))):
                 new_array = []
                 for elem in val:
-                    new_val = self._recursive_json_fix(elem)
+                    new_val = self._recursive_json_reverse_fix(elem)
                     new_array.append(new_val)
                 out_doc[key] = new_array
             else:
@@ -359,7 +379,7 @@ class Database(object):
                         ref_key = each_val.get('reference')
                         if ref_key:
                             ref = self.query_reference({ref_id_column: ref_key})
-                            if ref:
+                            if ref.size > 0:
                                 doc[key][i]['reference'] = ref[0]
 
         return result

@@ -1,0 +1,10 @@
+[run]
+data_file = .coverage
+source = galcat
+omit = galcat/tests/*
+
+[report]
+omit = galcat/tests/*
+
+[html]
+directory = htmlcov
