@@ -194,10 +194,12 @@ def test_recursive_json_fix():
     doc = {"name": "Gal 3",
            "ebv": [{"value": 0.2, "best": 1, "reference": "Bellazzini_2006_1"},
                    {"value": 0.4, "best": 0},
-                   {"value": 0.6, "best": 0, "list": [{'a': 1}, {'a': 2}, {'a': 3}]}]}
+                   {"value": 0.6, "best": 0, "list": [{'a': 1}, {'a': 2}, {'a': 3}]}],
+           "list2": [1, 2, 3]}
     newdoc = db._recursive_json_fix(doc)
     assert isinstance(newdoc['ebv'], np.ndarray)
     assert isinstance(newdoc['ebv'][2]['list'], np.ndarray)
+    assert isinstance(newdoc['list2'], np.ndarray)
     assert len(newdoc['ebv']) == 3
 
 
@@ -205,10 +207,12 @@ def test_recursive_json_reverse_fix():
     doc = {"name": "Gal 3",
            "ebv": np.array([{"value": 0.2, "best": 1, "reference": "Bellazzini_2006_1"},
                            {"value": 0.4, "best": 0},
-                           {"value": 0.6, "best": 0, "list": np.array([{'a': 1}, {'a': 2}, {'a': 3}])}])}
+                           {"value": 0.6, "best": 0, "list": np.array([{'a': 1}, {'a': 2}, {'a': 3}])}]),
+           "list2": np.array([1, 2, 3])}
     newdoc = db._recursive_json_reverse_fix(doc)
     assert isinstance(newdoc['ebv'], list)
     assert isinstance(newdoc['ebv'][2]['list'], list)
+    assert isinstance(newdoc['list2'], list)
     assert len(newdoc['ebv']) == 3
 
 
@@ -231,9 +235,18 @@ def test_get_values_from_distribution():
     result = get_values_from_distribution(n_distr, unit='kpc')
     assert 'kpc' == result['unit']
 
+    distr = [1.20881063, 0.93766121, 1.20136033, 1.11122468, 0.88140548,
+           0.98529047, 0.83750181, 0.95603778, 0.90262727, 0.76719971,
+           0.96954131, 0.83957612, 1.05208742, 0.9203976 , 0.5388856 ,
+           0.82028187, 0.99002746, 0.99821842, 1.08264829, 0.88236597,
+           1.07393172, 0.68800062, 0.95087714, 0.95349601, 1.20331926,
+           1.1427941 , 1.13346843, 1.12862014, 1.32770298]
+    result = get_values_from_distribution(distr)
+    assert center == pytest.approx(result['value'], abs=5e-2)
+    assert std == pytest.approx(result['error'], abs=5e-2)
+
 
 def test_distribution():
-    # TODO: Fix this, currently fails in recursive_json_fix since its a pure list
     doc = {'name': 'Gal 9',
            'ebv': [{'distribution': [1.20881063, 0.93766121, 1.20136033, 1.11122468, 0.88140548,
            0.98529047, 0.83750181, 0.95603778, 0.90262727, 0.76719971,
@@ -244,5 +257,14 @@ def test_distribution():
     db.load_file_to_db(doc)
 
     df = db.query_table({'name': 'Gal 9'})
-    print(df)
-    assert False
+    assert df[['ebv']][0][0] == pytest.approx(1, abs=5e-2)
+
+    # Queries against distribution only work with MongoDB implementation
+    if USE_MONGO:
+        docs = db.query({'ebv.distribution': {'$lte': 1}})
+        assert len(docs) == 1
+        assert docs[0]['name'] == 'Gal 9'
+        docs = db.query({'ebv.distribution': {'$gte': 10}})
+        assert len(docs) == 0
+        db.db.delete_one({'name': 'Gal 9'})
+

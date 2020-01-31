@@ -13,6 +13,9 @@ from astropy import uncertainty as unc
 def get_values_from_distribution(distribution, unit=None):
     """Assuming a normal distribution, return value+error; includes unit if provided"""
 
+    if isinstance(distribution, (list, np.ndarray)):
+        distribution = unc.Distribution(distribution)
+
     val = distribution.pdf_mean
     err = distribution.pdf_std
 
@@ -158,17 +161,30 @@ class Database(object):
         """
 
         out_doc = {}
-        for key, val in doc.items():
-            if isinstance(val, dict):
-                out_doc[key] = self._recursive_json_fix(val)
-            elif isinstance(val, list):
-                new_array = np.array([])
-                for elem in val:
-                    new_val = self._recursive_json_fix(elem)
-                    new_array = np.append(new_array, new_val)
-                out_doc[key] = new_array
-            else:
-                out_doc[key] = val
+
+        if isinstance(doc, list):
+            # Handle lists by converting to numpy arrays
+            out_doc = np.array([])
+            for elem in doc:
+                if isinstance(elem, dict):
+                    elem = self._recursive_json_fix(elem)
+                out_doc = np.append(out_doc, elem)
+        elif isinstance(doc, dict):
+            # Handle dicts by recursively fixing
+            for key, val in doc.items():
+                if isinstance(val, dict):
+                    out_doc[key] = self._recursive_json_fix(val)
+                elif isinstance(val, list):
+                    new_array = np.array([])
+                    for elem in val:
+                        new_val = self._recursive_json_fix(elem)
+                        new_array = np.append(new_array, new_val)
+                    out_doc[key] = new_array
+                else:
+                    out_doc[key] = val
+        else:
+            out_doc = doc
+
         return out_doc
 
     def _recursive_json_reverse_fix(self, doc):
@@ -190,20 +206,31 @@ class Database(object):
         out_doc = {}
 
         # Remove _id if present (used in MongoDB)
-        if self.use_mongodb and '_id' in doc.keys():
+        if self.use_mongodb and isinstance(doc, dict) and '_id' in doc.keys():
             del doc['_id']
 
-        for key, val in doc.items():
-            if isinstance(val, dict):
-                out_doc[key] = self._recursive_json_reverse_fix(val)
-            elif isinstance(val, type(np.array([]))):
-                new_array = []
-                for elem in val:
-                    new_val = self._recursive_json_reverse_fix(elem)
-                    new_array.append(new_val)
-                out_doc[key] = new_array
-            else:
-                out_doc[key] = val
+        if isinstance(doc, list):
+            # Handle np.arrays by converting to list
+            out_doc = []
+            for elem in doc:
+                if isinstance(elem, dict):
+                    elem = self._recursive_json_reverse_fix(elem)
+                out_doc.append(elem)
+        elif isinstance(doc, dict):
+            for key, val in doc.items():
+                if isinstance(val, dict):
+                    out_doc[key] = self._recursive_json_reverse_fix(val)
+                elif isinstance(val, type(np.array([]))):
+                    new_array = []
+                    for elem in val:
+                        new_val = self._recursive_json_reverse_fix(elem)
+                        new_array.append(new_val)
+                    out_doc[key] = new_array
+                else:
+                    out_doc[key] = val
+        else:
+            out_doc = doc
+
         return out_doc
 
     def save_from_db(self, doc, verbose=False, out_dir='', save=True, name=''):
@@ -379,7 +406,7 @@ class Database(object):
                         ref_key = each_val.get('reference')
                         if ref_key:
                             ref = self.query_reference({ref_id_column: ref_key})
-                            if ref.size > 0:
+                            if isinstance(ref, (list, np.ndarray)) and len(ref) > 0:
                                 doc[key][i]['reference'] = ref[0]
 
         return result
