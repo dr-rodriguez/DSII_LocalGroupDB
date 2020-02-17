@@ -11,7 +11,10 @@ from astropy.units import Quantity
 from astropy.coordinates import SkyCoord
 from astropy import uncertainty as unc
 
-def get_values_from_distribution(distribution, unit=None):
+__all__ = ['Database']
+
+
+def _get_values_from_distribution(distribution, unit=None):
     """Assuming a normal distribution, return value+error; includes unit if provided"""
 
     if isinstance(distribution, (list, np.ndarray)):
@@ -595,7 +598,7 @@ class Database(object):
                             ind = np.array([x.get('best', 0) for x in val]) == 1
                         unit = val[ind][0].get('unit')
                         if val[ind][0].get('distribution') is not None:
-                            temp_dic = get_values_from_distribution(val[ind][0].get('distribution'))
+                            temp_dic = _get_values_from_distribution(val[ind][0].get('distribution'))
                             temp_val = temp_dic['value']
                         else:
                             temp_val = val[ind][0]['value']
@@ -603,7 +606,7 @@ class Database(object):
                     else:
                         unit = val[0].get('unit')
                         if val[0].get('distribution') is not None:
-                            temp_dic = get_values_from_distribution(val[0].get('distribution'))
+                            temp_dic = _get_values_from_distribution(val[0].get('distribution'))
                             temp_val = temp_dic['value']
                         else:
                             temp_val = val[0]['value']
