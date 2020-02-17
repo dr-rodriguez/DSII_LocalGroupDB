@@ -1,14 +1,15 @@
 # Core functionality for database implementation
 import os
 import json
+import warnings
 import numpy as np
 import pandas as pd
 from copy import deepcopy
 from astropy import units as u
 from astropy.table import QTable
 from astropy.units import Quantity
+from astropy.coordinates import SkyCoord
 from astropy import uncertainty as unc
-
 
 def get_values_from_distribution(distribution, unit=None):
     """Assuming a normal distribution, return value+error; includes unit if provided"""
@@ -548,7 +549,8 @@ class Database(object):
 
         return val
 
-    def query_table(self, query={}, selection={}):
+    def query_table(self, query={}, selection={}, reorder_columns_rowidx=0,
+                          add_coordinates=True):
         """
         Get a formatted table of all query results. When multiple results are present for a single value, the best one
         is picked unless the user specifies a selection. This functionality will be revisited in the future.
@@ -560,6 +562,13 @@ class Database(object):
             Query to use in MongoDB query language. Default is an empty dictionary for all results.
         selection : dict
             Dictionary with the field value and reference to use for it (otherwise will pick best=1)
+        reorder_columns_rowidx : int or None
+            Row/entry index to use as a template for column order.  If None, use
+            an undefined order (determined by `astropy.Table` initializer).
+        add_coordinates : bool or str
+            If True, adds a 'coord' column to the table (if it does not
+            exist) with a SkyCoord for this table.  If 'raise', raises an
+            exception if this fails, otherwise a warning is generated.
 
         Returns
         -------
@@ -602,11 +611,32 @@ class Database(object):
 
             tab_data.append(out_row)
 
-        # Convert to QTable
-        temp = pd.DataFrame(tab_data)  # use pandas as intermediary format
-        df = QTable.from_pandas(temp)
+        qtab = QTable(tab_data)
 
-        return df
+        if add_coordinates:
+            if 'coord' in qtab.colnames:
+                warnings.warn('"coord" column already in database table, '
+                              'not adding coordinates automatically')
+            else:
+                try:
+                    coo = SkyCoord.guess_from_table(qtab)
+                except Exception as e:
+                    if add_coordinates == 'raise':
+                        raise e
+                    else:
+                        warnings.warn(f'Failed to add coordinates - exception '
+                                       'raised in guess_from_table: {e}')
+                else:
+                    qtab['coord'] = coo
+
+        if reorder_columns_rowidx is None and len(tab_data) > 0:
+            return qtab
+        else:
+            reorder_row_colnames = list(tab_data[reorder_columns_rowidx].keys())
+            for colname in qtab.colnames:
+                if colname not in reorder_row_colnames:
+                    reorder_row_colnames.append(colname)
+            return qtab[reorder_row_colnames]
 
     def table(self, *args, **kwargs):
         return self.query_table(*args, **kwargs)
