@@ -21,7 +21,7 @@ with open('input/NearbyGalaxies.dat', 'r') as f:
         # print(rah, ram, ras, ra)
 
         # Declination
-        decd = float(line[31:33])
+        decd = float(line[30:33])
         decm = float(line[34:36])
         decs = float(line[37:39])
         if decd < 0:
