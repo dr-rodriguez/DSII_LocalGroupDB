@@ -6,12 +6,6 @@
             "best": 1,
             "reference": "",
             "unit": "deg"
-        },
-        {
-            "value": 999.14542,
-            "best": 0,
-            "reference": "FakeRef2019",
-            "unit": "deg"
         }
     ],
     "dec": [
@@ -26,7 +20,7 @@
         {
             "value": 0.166,
             "best": 1,
-            "reference": "Bellazzini_2006_1"
+            "reference": ""
         }
     ],
     "distance_modulus": [
