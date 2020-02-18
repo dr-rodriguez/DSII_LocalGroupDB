@@ -97,7 +97,7 @@
             "error_lower": 0.5,
             "best": 1,
             "unit": "km/s",
-            "reference": ""
+            "reference": "Koposov_2011"
         }
     ]
 }
