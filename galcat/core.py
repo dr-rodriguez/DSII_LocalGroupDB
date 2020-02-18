@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from copy import deepcopy
 from astropy import units as u
-from astropy.table import QTable
+from astropy.table import QTable, Table
 from astropy.units import Quantity
 from astropy.coordinates import SkyCoord
 from astropy import uncertainty as unc
@@ -553,7 +553,7 @@ class Database(object):
         return val
 
     def query_table(self, query={}, selection={}, reorder_columns_rowidx=0,
-                          add_coordinates=True):
+                          add_coordinates=True, use_qtable=True):
         """
         Get a formatted table of all query results. When multiple results are present for a single value, the best one
         is picked unless the user specifies a selection. This functionality will be revisited in the future.
@@ -572,10 +572,12 @@ class Database(object):
             If True, adds a 'coord' column to the table (if it does not
             exist) with a SkyCoord for this table.  If 'raise', raises an
             exception if this fails, otherwise a warning is generated.
+        use_qtable : bool
+            If True, the result is a QTable, otherwise, a Table
 
         Returns
         -------
-        df : astropy.table.QTable
+        df : astropy.table.QTable or astropy.table.Table
             Astropy QTable of results
         """
 
@@ -614,15 +616,18 @@ class Database(object):
 
             tab_data.append(out_row)
 
-        qtab = QTable(tab_data)
+        if use_qtable:
+            tab = QTable(tab_data)
+        else:
+            tab = Table(tab_data)
 
         if add_coordinates:
-            if 'coord' in qtab.colnames:
+            if 'coord' in tab.colnames:
                 warnings.warn('"coord" column already in database table, '
                               'not adding coordinates automatically')
             else:
                 try:
-                    coo = SkyCoord.guess_from_table(qtab)
+                    coo = SkyCoord.guess_from_table(tab)
                 except Exception as e:
                     if add_coordinates == 'raise':
                         raise e
@@ -630,16 +635,16 @@ class Database(object):
                         warnings.warn(f'Failed to add coordinates - exception '
                                        'raised in guess_from_table: {e}')
                 else:
-                    qtab['coord'] = coo
+                    tab['coord'] = coo
 
         if reorder_columns_rowidx is None and len(tab_data) > 0:
-            return qtab
+            return tab
         else:
             reorder_row_colnames = list(tab_data[reorder_columns_rowidx].keys())
-            for colname in qtab.colnames:
+            for colname in tab.colnames:
                 if colname not in reorder_row_colnames:
                     reorder_row_colnames.append(colname)
-            return qtab[reorder_row_colnames]
+            return tab[reorder_row_colnames]
 
     def table(self, *args, **kwargs):
         return self.query_table(*args, **kwargs)
