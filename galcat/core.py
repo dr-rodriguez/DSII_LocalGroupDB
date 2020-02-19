@@ -20,8 +20,8 @@ def _get_values_from_distribution(distribution, unit=None):
     if isinstance(distribution, (list, np.ndarray)):
         distribution = unc.Distribution(distribution)
 
-    val = distribution.pdf_mean
-    err = distribution.pdf_std
+    val = distribution.pdf_mean()
+    err = distribution.pdf_std()
 
     if isinstance(val, u.quantity.Quantity):
         unit = val.unit.to_string()
@@ -638,6 +638,8 @@ class Database(object):
                     tab['coord'] = coo
 
         if reorder_columns_rowidx is None and len(tab_data) > 0:
+            return tab
+        elif len(tab_data) == 0:
             return tab
         else:
             reorder_row_colnames = list(tab_data[reorder_columns_rowidx].keys())
