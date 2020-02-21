@@ -45,12 +45,16 @@ class Validator(object):
     def run(self):
         # Run checks
         if self.run_full_db:
+            result_list = []
             for doc in self.db.query_db({}):
                 self.doc = doc
-                self.run_one()
+                result = self.run_one()
+                result_list.append(result)
+            result = all(result_list)
         else:
-            self.run_one()
+            result = self.run_one()
         print('Validation complete.')
+        return result
 
     def run_one(self):
         if self.is_data:

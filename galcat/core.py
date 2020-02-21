@@ -310,7 +310,7 @@ class Database(object):
             from .validator import Validator
             v = Validator(database=self, db_object=new_data, is_data=True)
             if not v.run():
-                print('{} does not pass JSON validation'.format(filename))
+                print('Failed validation: {}'.format(filename))
                 return
 
         name = new_data.get(id_column)
