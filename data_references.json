@@ -1,0 +1,24 @@
+[
+  {
+    "key": "Koposov_2011",
+    "id": 1,
+    "year": 2011,
+    "doi": "10.1088/0004-637X/736/2/146",
+    "bibcode": "2011ApJ...736..146K",
+    "authors": [
+      "Koposov, Sergey E.", "Gilmore, G.", "Walker, M. G.", "Belokurov, V.", "Evans, N. Wyn", "Fellhauer, M.", "Gieren, W.", "Geisler, D.", "Monaco, L.", "Norris, J. E.", "Okamoto, S.", "Peñarrubia, J.", "Wilkinson, M.", "Wyse, R. F. G.", "Zucker, D. B."
+    ],
+    "journal": "ApJ",
+    "title": "Accurate Stellar Kinematics at Faint Magnitudes: Application to the Boötes I Dwarf Spheroidal Galaxy"
+  },
+  {
+    "key": "Martin_2007",
+    "id": 2,
+    "year": 2007,
+    "doi": "10.1111/j.1365-2966.2007.12055.x",
+    "bibcode": "2007MNRAS.380..281M",
+    "authors": ["Martin, N. F.", "Ibata, R. A.", "Chapman, S. C.", "Irwin, M.", "Lewis, G. F."],
+    "journal": "MNRAS",
+    "title": "A Keck/DEIMOS spectroscopic survey of faint Galactic satellites: searching for the least massive dwarf galaxies"
+  }
+]

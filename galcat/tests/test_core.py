@@ -1,9 +1,12 @@
 # Unit tests for core.py
+import os
+import numpy as np
 import pytest
 import astropy.units as u
 from astropy import uncertainty as unc
 from astropy.table import QTable
 from galcat.core import *
+from galcat.core import _get_values_from_distribution
 
 USE_MONGO = False
 
@@ -118,7 +121,7 @@ def test_operator_or():
     docs = db.query_db(query)
     assert len(docs) == 2
 
-    query = {'$or': [{'v_mag.value': 16.2}, {'light_radius.error_upper': 0.12}]}
+    query = {'$or': [{'v_mag.value': 16.2}, {'half-light_radius.error_upper': 0.12}]}
     docs = db.query_db(query)
     assert len(docs) == 1
 
@@ -134,6 +137,10 @@ def test_query_table():
 
     df = db.query_table({'name': 'Gal 1'}, selection={'ra': 'FakeRef2019'})
     assert df[['ra']][0][0].value == 999.14542
+
+    query = {'$or': [{'v_mag.value': 16.2}, {'half-light_radius.error_upper': 0.12}]}
+    df = db.query_table(query)
+    assert len(df) == 1
 
 
 def test_load_file_to_db():
@@ -220,19 +227,19 @@ def test_get_values_from_distribution():
     center, std = 1, 0.2
     np.random.seed(12345)
     n_distr = unc.normal(center * u.kpc, std=std * u.kpc, n_samples=100)
-    result = get_values_from_distribution(n_distr)
+    result = _get_values_from_distribution(n_distr)
     assert center == pytest.approx(result['value'], abs=1e-2)
     assert std == pytest.approx(result['error'], abs=1e-2)
     assert 'kpc' == result['unit']
 
     np.random.seed(12345)
     n_distr = unc.normal(center, std=std, n_samples=100)
-    result = get_values_from_distribution(n_distr)
+    result = _get_values_from_distribution(n_distr)
     assert center == pytest.approx(result['value'], abs=1e-2)
     assert std == pytest.approx(result['error'], abs=1e-2)
     assert result.get('unit', None) is None
 
-    result = get_values_from_distribution(n_distr, unit='kpc')
+    result = _get_values_from_distribution(n_distr, unit='kpc')
     assert 'kpc' == result['unit']
 
     distr = [1.20881063, 0.93766121, 1.20136033, 1.11122468, 0.88140548,
@@ -241,7 +248,7 @@ def test_get_values_from_distribution():
            0.82028187, 0.99002746, 0.99821842, 1.08264829, 0.88236597,
            1.07393172, 0.68800062, 0.95087714, 0.95349601, 1.20331926,
            1.1427941 , 1.13346843, 1.12862014, 1.32770298]
-    result = get_values_from_distribution(distr)
+    result = _get_values_from_distribution(distr)
     assert center == pytest.approx(result['value'], abs=5e-2)
     assert std == pytest.approx(result['error'], abs=5e-2)
 

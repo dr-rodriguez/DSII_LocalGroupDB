@@ -10,7 +10,7 @@
     ],
     "dec": [
         {
-            "value": 60.45,
+            "value": -60.45,
             "best": 1,
             "reference": "",
             "unit": "deg"
