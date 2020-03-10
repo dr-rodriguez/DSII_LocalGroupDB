@@ -11,7 +11,7 @@ from astropy.units import Quantity
 from astropy.coordinates import SkyCoord
 from astropy import uncertainty as unc
 
-__all__ = ['Database']
+__all__ = ['Database', 'write_curation']
 
 
 def _get_values_from_distribution(distribution, unit=None):
@@ -33,6 +33,52 @@ def _get_values_from_distribution(distribution, unit=None):
         out_dict['unit'] = unit
 
     return out_dict
+
+
+def _read_curation(curation):
+    """
+    Read a curation JSON to a dictionary
+
+    Parameters
+    ----------
+    curation : str
+        Name of curation JSON to read
+    Returns
+    -------
+    curation_dict : dict
+        Output of curation in dictionary form
+    """
+
+    curation_dict = {}
+    if isinstance(curation, str) and os.path.exists(curation):
+        with open(curation, 'r') as f:
+            curation_dict = json.load(f)
+    elif isinstance(curation, dict):
+        curation_dict = curation.copy()
+
+    return curation_dict
+
+
+def write_curation(curation, existing={}, filename='curation.json'):
+    """
+    Output curation dictionary to a JSON file. Will append and write over an existing curation if provided.
+
+    Parameters
+    ----------
+    curation : dict
+        Curation dictionary you want to write out
+    existing : dict or str
+        File or dictionary for an existing dictionary to use a baseline
+    filename : str
+        Name of curation to use
+    """
+
+    final_dict = _read_curation(existing)
+    final_dict.update(curation)
+
+    with open(filename, 'w') as f:
+        out_json = json.dumps(final_dict, indent=4, sort_keys=False)
+        f.write(out_json)
 
 
 class Database(object):
@@ -552,6 +598,40 @@ class Database(object):
 
         return val
 
+    def generate_curation(self, reference, existing_curation={}):
+        """
+        Generate a curation dictionary for use in query_table or that can be exported.
+        This will loop over all parameters saving only those parameters that contain the reference.
+
+        Parameters
+        ----------
+        reference : str or list
+            Reference to use in the curation. If a list, this will recursive build the curation assuming a sorted order
+        existing_curation : dict
+            Existing curation to append new values to (appended values will overwrite existing ones)
+
+        Returns
+        -------
+        curation : dict
+        """
+
+        curation = existing_curation.copy()
+
+        if isinstance(reference, (list, np.ndarray)):
+            reverse_list = reference[::-1]
+            for ref in reverse_list:
+                curation = self.generate_curation(ref, existing_curation=curation)
+        else:
+            for doc in self.query_db(query={}):
+                for k, v_list in doc.items():
+                    if not isinstance(v_list, (list, np.ndarray)):
+                        continue
+                    for v in v_list:
+                        if v.get('reference') == reference:
+                            curation[k] = reference
+
+        return curation
+
     def query_table(self, query={}, curation={}, selection={}, reorder_columns_rowidx=0,
                           add_coordinates=True, use_qtable=True):
         """
@@ -587,16 +667,11 @@ class Database(object):
         results = self.query_db(query=query)
 
         # Load curation file (JSON of best values to use)
-        if isinstance(curation, str) and os.path.exists(curation):
-            with open(curation, 'r') as f:
-                curation_dict = json.load(f)
-        else:
-            curation_dict = curation.copy()
+        curation_dict = _read_curation(curation)
 
         # If user as provided any selection values, overwrite the curation settings
         if selection:
-            for k,v in selection.items():
-                curation_dict[k] = v
+            curation_dict.update(selection)
 
         # For each entry in result, select best field.value or what the user has specified
         tab_data = []
@@ -613,13 +688,16 @@ class Database(object):
                             ind = np.array([x['reference'] for x in val]) == curation_dict[key]
                         else:
                             ind = np.array([x.get('best', 0) for x in val]) == 1
-                        unit = val[ind][0].get('unit')
-                        if val[ind][0].get('distribution') is not None:
-                            temp_dic = _get_values_from_distribution(val[ind][0].get('distribution'))
-                            temp_val = temp_dic['value']
-                        else:
-                            temp_val = val[ind][0]['value']
-                        out_row[key] = self._store_quantity(temp_val, unit)
+
+                        # Only proceed if you have any results to consider
+                        if len(val[ind]) > 0:
+                            unit = val[ind][0].get('unit')
+                            if val[ind][0].get('distribution') is not None:
+                                temp_dic = _get_values_from_distribution(val[ind][0].get('distribution'))
+                                temp_val = temp_dic['value']
+                            else:
+                                temp_val = val[ind][0]['value']
+                            out_row[key] = self._store_quantity(temp_val, unit)
                     else:
                         unit = val[0].get('unit')
                         if val[0].get('distribution') is not None:

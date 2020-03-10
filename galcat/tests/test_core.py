@@ -6,7 +6,7 @@ import astropy.units as u
 from astropy import uncertainty as unc
 from astropy.table import QTable
 from galcat.core import *
-from galcat.core import _get_values_from_distribution
+from galcat.core import _get_values_from_distribution, _read_curation
 
 USE_MONGO = False
 
@@ -192,11 +192,8 @@ def test_add_data():
 
 
 def test_curation():
-    # reset DB values
-    db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
-
     # Add example with two references
-    doc = {"name": "Gal 3",
+    doc = {"name": "Gal Curation",
            "ra": [{"value": 5, "best": 1, "reference": "", "unit": "deg"}],
            "dec": [{"value": -1, "best": 1, "reference": "", "unit": "deg"}],
            "ebv": [{"value": 0.2, "best": 1, "reference": "Ref_1"},
@@ -204,24 +201,61 @@ def test_curation():
                    {"value": 0.6, "best": 0, "reference": "Ref_3"}],
            "redshift": [{"value": 0.1, "reference": "Ref_1"},
                         {"value": 0.2, "reference": "Ref_2", "best": 1},
-                        {"value": 0.3, "reference": "Ref_3"}]}
+                        {"value": 0.3, "reference": "Ref_3"},
+                        {"value": 0.4, "reference": "Ref_4"}],
+           "l": [{"value": 0.1, "reference": "Ref_4"},
+                 {"value": 0.2, "reference": "Ref_5"}]}
     db.load_file_to_db(doc)
 
-    t = db.query_table({'name': 'Gal 3'})
+    t = db.query_table({'name': 'Gal Curation'})
     assert t['ebv'] == 0.2
     assert t['redshift'] == 0.2
-    t = db.query_table({'name': 'Gal 3'}, curation='galcat/tests/curation.json')  # has Ref 2 for EBV, Ref 1 for z
+    t = db.query_table({'name': 'Gal Curation'}, curation='galcat/tests/curation.json')  # has Ref 2 for EBV, Ref 1 for z
     assert t['ebv'] == 0.4
     assert t['redshift'] == 0.1
-    t = db.query_table({'name': 'Gal 3'}, curation={"ebv": "Ref_3", "redshift": "Ref_3"})
+    t = db.query_table({'name': 'Gal Curation'}, curation={"ebv": "Ref_3", "redshift": "Ref_3"})
     assert t['ebv'] == 0.6
     assert t['redshift'] == 0.3
-    t = db.query_table({'name': 'Gal 3'}, curation='galcat/tests/curation.json', selection={"ebv": "Ref_3"})
+    t = db.query_table({'name': 'Gal Curation'}, curation='galcat/tests/curation.json', selection={"ebv": "Ref_3"})
     assert t['ebv'] == 0.6
     assert t['redshift'] == 0.1
+    assert 'l' not in t.columns  # no best=1 and not the selected reference, so don't display this parameter
 
-    # reset DB values
-    db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
+
+def test_generate_curation():
+    curation = db.generate_curation('Ref_1')
+    assert 'ebv' in curation.keys()
+    assert 'redshift' in curation.keys()
+    assert 'l' not in curation.keys()
+
+    curation = db.generate_curation('Ref_4')
+    assert 'ebv' not in curation.keys()
+    assert 'redshift' in curation.keys()
+    assert 'l' in curation.keys()
+
+    curation = db.generate_curation(['Ref_4', 'Ref_1'])
+    assert 'ebv' in curation.keys() and curation['ebv'] == 'Ref_1'
+    assert 'redshift' in curation.keys() and curation['redshift'] == 'Ref_4'
+    assert 'l' in curation.keys() and curation['l'] == 'Ref_4'
+
+    curation = db.generate_curation('Ref_25')
+    assert not curation and len(curation) == 0
+
+
+def test_write_curation():
+    test_file = 'galcat/tests/test_write_curation.json'
+    if os.path.exists(test_file):
+        os.remove(test_file)
+
+    write_curation(curation={'a': 1}, existing={'b': 2}, filename=test_file)
+    assert os.path.exists(test_file)
+
+    temp = _read_curation(test_file)
+    assert 'b' in temp and temp['b'] == 2
+    assert 'a' in temp and temp['a'] == 1
+
+    if os.path.exists(test_file):
+        os.remove(test_file)
 
 
 def test_save_from_db(tmpdir):
