@@ -552,7 +552,7 @@ class Database(object):
 
         return val
 
-    def query_table(self, query={}, selection={}, reorder_columns_rowidx=0,
+    def query_table(self, query={}, curation={}, selection={}, reorder_columns_rowidx=0,
                           add_coordinates=True, use_qtable=True):
         """
         Get a formatted table of all query results. When multiple results are present for a single value, the best one
@@ -563,8 +563,11 @@ class Database(object):
         ----------
         query : dict
             Query to use in MongoDB query language. Default is an empty dictionary for all results.
+        curation : dict or str
+            Name of file to use as curation for the data or dictionary with the field value and reference to use for
+            it (otherwise will pick best=1)
         selection : dict
-            Dictionary with the field value and reference to use for it (otherwise will pick best=1)
+            Dictionary of overwrites for the supplied curation
         reorder_columns_rowidx : int or None
             Row/entry index to use as a template for column order.  If None, use
             an undefined order (determined by `astropy.Table` initializer).
@@ -583,6 +586,18 @@ class Database(object):
 
         results = self.query_db(query=query)
 
+        # Load curation file (JSON of best values to use)
+        if isinstance(curation, str) and os.path.exists(curation):
+            with open(curation, 'r') as f:
+                curation_dict = json.load(f)
+        else:
+            curation_dict = curation.copy()
+
+        # If user as provided any selection values, overwrite the curation settings
+        if selection:
+            for k,v in selection.items():
+                curation_dict[k] = v
+
         # For each entry in result, select best field.value or what the user has specified
         tab_data = []
         for entry in results:
@@ -593,9 +608,9 @@ class Database(object):
                 else:
                     # Select best one to return
                     if len(val) > 1:
-                        if key in selection.keys():
+                        if key in curation_dict.keys():
                             # If selection listed a key, use the reference information there
-                            ind = np.array([x['reference'] for x in val]) == selection[key]
+                            ind = np.array([x['reference'] for x in val]) == curation_dict[key]
                         else:
                             ind = np.array([x.get('best', 0) for x in val]) == 1
                         unit = val[ind][0].get('unit')

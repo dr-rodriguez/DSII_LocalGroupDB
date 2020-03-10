@@ -191,6 +191,39 @@ def test_add_data():
     db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
 
 
+def test_curation():
+    # reset DB values
+    db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
+
+    # Add example with two references
+    doc = {"name": "Gal 3",
+           "ra": [{"value": 5, "best": 1, "reference": "", "unit": "deg"}],
+           "dec": [{"value": -1, "best": 1, "reference": "", "unit": "deg"}],
+           "ebv": [{"value": 0.2, "best": 1, "reference": "Ref_1"},
+                   {"value": 0.4, "best": 0, "reference": "Ref_2"},
+                   {"value": 0.6, "best": 0, "reference": "Ref_3"}],
+           "redshift": [{"value": 0.1, "reference": "Ref_1"},
+                        {"value": 0.2, "reference": "Ref_2", "best": 1},
+                        {"value": 0.3, "reference": "Ref_3"}]}
+    db.load_file_to_db(doc)
+
+    t = db.query_table({'name': 'Gal 3'})
+    assert t['ebv'] == 0.2
+    assert t['redshift'] == 0.2
+    t = db.query_table({'name': 'Gal 3'}, curation='galcat/tests/curation.json')  # has Ref 2 for EBV, Ref 1 for z
+    assert t['ebv'] == 0.4
+    assert t['redshift'] == 0.1
+    t = db.query_table({'name': 'Gal 3'}, curation={"ebv": "Ref_3", "redshift": "Ref_3"})
+    assert t['ebv'] == 0.6
+    assert t['redshift'] == 0.3
+    t = db.query_table({'name': 'Gal 3'}, curation='galcat/tests/curation.json', selection={"ebv": "Ref_3"})
+    assert t['ebv'] == 0.6
+    assert t['redshift'] == 0.1
+
+    # reset DB values
+    db.load_file_to_db('galcat/tests/test_data/Gal_1.json')
+
+
 def test_save_from_db(tmpdir):
     doc = db.query_db({'name': 'Gal 1'})[0]
     db.save_from_db(doc, out_dir=tmpdir)
